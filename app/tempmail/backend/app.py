@@ -10,8 +10,8 @@ socketio = SocketIO(app)
 
 # Speicherort für empfangene Mails
 EMAIL_DIR = "/var/tempmail/mails"
-TIMER_DURATION = 120  # 2 Minuten in Sekunden
-ALIAS_LIFETIME = timedelta(minutes=2)
+TIMER_DURATION = 300  # 2 Minuten in Sekunden
+ALIAS_LIFETIME = timedelta(minutes=5)
 
 def generate_email():
     return ''.join(random.choices(string.ascii_lowercase, k=5))
