@@ -23,6 +23,10 @@ jobs:
           name: correct perm
           command: |
             ssh $user@$host -i SHA256:cYT+MdKiciOdZmO1GtAj42sxDZgb8YLH0UmT+9JMZeU  -o 'StrictHostKeyChecking no' chown www-data:www-data -R $dstdir
+      - run:
+          name: restart service
+          command: |
+            ssh $user@$host -i SHA256:cYT+MdKiciOdZmO1GtAj42sxDZgb8YLH0UmT+9JMZeU  -o 'StrictHostKeyChecking no' systemctl restart tempmail.service
 
 workflows:
   version: 2.1
