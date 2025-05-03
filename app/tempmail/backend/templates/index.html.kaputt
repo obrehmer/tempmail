@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tempmail</title>
+</head>
+<body>
+    <h1>Willkommen zu deiner temporären E-Mail</h1>
+
+    <!-- Hinweis, dass Reload eine neue E-Mail-Adresse und das Löschen der alten Mails bedeutet -->
+    <p>Diese E-Mail-Adresse wird nach 2 Minuten ablaufen. Ein Reload der Seite erstellt eine neue Adresse und löscht alle bisherigen E-Mails.</p>
+
+    <p>Deine temporäre E-Mail-Adresse lautet: <strong>{{ email }}</strong></p>
+
+    <!-- Verbleibende Zeit -->
+    <p>Verbleibende Zeit: <span id="timer">{{ remaining_minutes }} Minuten und {{ remaining_seconds }} Sekunden</span></p>
+
+    <h3>Deine E-Mails:</h3>
+    <ul>
+        {% for mail in emails %}
+            <li>
+                <a href="{{ url_for('view_email', email_id=email, filename=mail['filename']) }}">
+                    {{ mail['subject'] or '(Kein Betreff)' }}
+                </a>
+            </li>
+        {% else %}
+            <li>Keine E-Mails gefunden.</li>
+        {% endfor %}
+    </ul>
+
+    <script>
+      // Den verbleibenden Timerwert aus der Session in Sekunden bekommen
+      let remainingTime = {{ session['remaining_time'] | default(0) }};
+      let timerElement = document.getElementById('timer');
+
+      function updateTimer() {
+        const minutes = Math.floor(remainingTime / 60);  // Minuten berechnen
+        const seconds = remainingTime % 60;              // Sekunden berechnen
+        timerElement.innerText = `${minutes} Minute${minutes !== 1 ? 'n' : ''} und ${seconds} Sekunde${seconds !== 1 ? 'n' : ''}`;
+
+        if (remainingTime <= 0) {
+          timerElement.innerText = "Abgelaufen";
+          setTimeout(() => {
+            window.location.href = '/';  // Seite neu laden und neue E-Mail generieren
+          }, 1000);
+          return;
+        }
+
+        remainingTime--;
+        setTimeout(updateTimer, 1000);
+      }
+
+      updateTimer();
+    </script>
+</body>
+</html>
+

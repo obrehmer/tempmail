@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TempMail</title>
+</head>
+<body>
+  <h1>Deine temporäre E-Mail:</h1>
+      <p>
+        <strong>{{ email }}</strong>
+        <br>
+	        {% if remaining_minutes <= 0 and remaining_seconds <= 0 %}
+            <strong>Die E-Mail-Adresse ist abgelaufen. Eine neue wurde erstellt.</strong>
+        {% else %}
+	<p>Diese E-Mail-Adresse ist nur 2 Minuten lang gültig. Verbleibende Zeit: <span id="timer"></span></p>
+        {% endif %}
+    </p>
+
+  <button onclick="location.reload()">🔄 Inbox aktualisieren</button>
+  <h2>Inbox:</h2>
+  <ul>
+    {% for mail in emails %}
+      <li>
+        <strong>Von: {{ mail.from }}</strong><br>
+	<a href="{{ url_for('view_email', email_id=email_id, filename=mail['filename']) }}">
+    {{ mail.subject }}
+</a>
+      </li>
+    {% else %}
+      <li>Keine Nachrichten.</li>
+    {% endfor %}
+  </ul>
+</body>
+
+
+<script>
+  // Zeit in Sekunden (2 Minuten = 120 Sekunden)
+  let remainingTime = 120;
+
+  function updateTimer() {
+    // Berechne Minuten und Sekunden
+    const minutes = Math.floor(remainingTime / 60);  // Minuten berechnen
+    const seconds = remainingTime % 60;              // Sekunden berechnen
+    
+    // Zeige die verbleibende Zeit an (minuten und sekunden)
+    document.getElementById('timer').innerText =
+      `${minutes} Minute${minutes !== 1 ? 'n' : ''} und ${seconds} Sekunde${seconds !== 1 ? 'n' : ''}`;
+
+    // Wenn die Zeit abgelaufen ist
+    if (remainingTime <= 0) {
+      document.getElementById('timer').innerText = "Abgelaufen";
+      // Optionale Weiterleitung zur Startseite, um eine neue Adresse zu generieren
+      setTimeout(() => {
+        window.location.href = '/';  // Seite neu laden und neue E-Mail generieren
+      }, 1000);
+      return;
+    }
+
+    // Reduziere die verbleibende Zeit um 1 Sekunde
+    remainingTime--;
+
+    // Aktualisiere den Timer alle 1 Sekunde
+    setTimeout(updateTimer, 1000);
+  }
+
+  // Timer starten
+  updateTimer();
+</script>
+
+
+</html>
+

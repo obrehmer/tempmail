@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>{{ mail.subject }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <meta name="description" content="Read your temporary email message: {{ mail.subject }}">
+    <meta name="keywords" content="temporary email, disposable email, email viewer, 2-minute mail, inbox">
+    <meta name="author" content="2-minute mail">
+
+    <!-- Open Graph for social media sharing -->
+    <meta property="og:title" content="{{ mail.subject }}">
+    <meta property="og:description" content="View your temporary email from {{ mail.from }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ mail.subject }}">
+    <meta name="twitter:description" content="View your temporary email from {{ mail.from }}">
+</head>
+<body>
+    <h1>{{ mail.subject }}</h1>
+    <p><strong>From:</strong> {{ mail.from }}</p>
+    <p><strong>To:</strong> {{ mail.to }}</p>
+    <hr>
+    <pre>{{ mail.body|safe }}</pre>
+    <hr>
+    <a href="{{ url_for('index') }}">Back to inbox</a>
+</body>
+</html>
+
