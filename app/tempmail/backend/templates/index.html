@@ -24,7 +24,7 @@
 
     <!-- Display the email address -->
     <p>
-      <strong>{{ email }}</strong><br>
+<div class="email-display">{{ email }}</div>
       {% if remaining_minutes <= 0 and remaining_seconds <= 0 %}
         <strong>The email address has expired. A new one has been created.</strong>
       {% else %}

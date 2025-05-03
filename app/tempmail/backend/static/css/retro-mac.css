@@ -138,3 +138,17 @@ input[type="text"]:focus {
   box-shadow: inset 1px 1px 0 #888;
 }
 
+.email-display {
+  display: inline-block;
+  background-color: #fff;
+  border: 2px solid #000;
+  padding: 10px 20px;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  box-shadow: inset -1px -1px 0 #000, inset 1px 1px 0 #fff;
+  font-family: 'Chicago', 'Geneva', sans-serif;
+}
+
