@@ -113,3 +113,28 @@ input[type="text"]:focus {
 .spaced-bottom {
   margin-bottom: 40px; /* Oder jeder gewünschte Wert */
 }
+
+.window-header {
+  background-color: #c3c7cb;
+  border: 2px solid #888;
+  box-shadow: inset -1px -1px 0 #000, inset 1px 1px 0 #fff;
+  padding: 6px 10px;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 20px;
+  text-align: center;
+  position: relative;
+}
+
+.window-header::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  width: 10px;
+  height: 10px;
+  background-color: #000;
+  border: 1px solid #fff;
+  box-shadow: inset 1px 1px 0 #888;
+}
+
