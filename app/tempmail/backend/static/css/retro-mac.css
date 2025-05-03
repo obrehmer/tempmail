@@ -110,3 +110,6 @@ input[type="text"]:focus {
 }
 
 
+.spaced-bottom {
+  margin-bottom: 40px; /* Oder jeder gewünschte Wert */
+}
