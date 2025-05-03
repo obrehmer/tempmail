@@ -8,12 +8,12 @@
   <meta name="keywords" content="temporary email, disposable email, 2-minute mail, free email, no signup, temp inbox">
   <meta name="author" content="2-minute mail">
   <title>2-minute mail - Free Disposable Temporary Email</title>
+  <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/static/css/retro-mac.css">
 </head>
 <body>
   <div class="container">
-    <h1>Your temporary email address</h1>
-<br><br>
+    <h1>Your temporary email address:</h1>
 
     <p style="max-width: 600px;">
       This is a disposable, temporary email address intended for spam protection and one-time use only.
@@ -32,8 +32,8 @@
     </p>
 
     <button onclick="location.reload()">🔄 Refresh inbox</button>
-    <br><br>
-    <h2>Inbox</h2>
+
+    <h2>Inbox:</h2>
     <ul>
       {% for mail in emails %}
         <li class="tile">
@@ -49,7 +49,6 @@
   </div>
 
   <script>
-    // Pass remaining time from session into JS
     window.remainingTime = {{ session['remaining_time'] | default(0) }};
   </script>
   <script src="/static/js/timer.js"></script>
