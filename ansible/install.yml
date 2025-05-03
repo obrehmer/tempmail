@@ -112,6 +112,15 @@
 
     - name: Save iptables rules (IPv4)
       shell: iptables-save > /etc/iptables/rules.v4
+      
+    - name: create dir for email data
+      file:
+        path: /var/tempmail/mails
+        state: directory
+        recurse: yes
+        owner: www-data
+        group: www-data
+        mode: 0750
 
   handlers:
 

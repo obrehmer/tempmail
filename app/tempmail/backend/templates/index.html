@@ -11,6 +11,14 @@
 </head>
 <body>
   <h1>Your temporary email address:</h1>
+
+  <p style="max-width: 600px;">
+    This is a disposable, temporary email address intended for spam protection and one-time use only.
+    <strong>You can only receive emails</strong> — sending is not supported.
+    Messages are <strong>not stored permanently</strong> and will be deleted after 2 minutes.
+    Use it to protect your personal inbox from spam or sign up anonymously.
+  </p>
+
   <p>
     <strong>{{ email }}</strong>
     <br>
@@ -38,34 +46,9 @@
 </body>
 
 <script>
-  // Get the remaining timer value from the session in seconds
-  let remainingTime = {{ session['remaining_time'] | default(0) }};
-  let timerElement = document.getElementById('countdown-timer');
-
-  function updateTimer() {
-    // Calculate the remaining minutes and seconds (integers only)
-    const minutes = Math.floor(remainingTime / 60);  // Calculate minutes
-    const seconds = Math.floor(remainingTime % 60);  // Calculate seconds
-
-    // Display in the format "minutes and seconds"
-    timerElement.innerText = `${minutes} minute${minutes !== 1 ? 's' : ''} and ${seconds} second${seconds !== 1 ? 's' : ''}`;
-
-    // If time has expired
-    if (remainingTime <= 0) {
-      timerElement.innerText = "Expired";
-      setTimeout(() => {
-        window.location.href = '/';  // Reload page and generate new email
-      }, 1000);
-      return;
-    }
-
-    // Decrease the time by 1 every second
-    remainingTime--;
-    setTimeout(updateTimer, 1000);
-  }
-
-  updateTimer();
+  // Make remaining time available globally for timer.js
+  window.remainingTime = {{ session['remaining_time'] | default(0) }};
 </script>
-
+<script src="/static/js/timer.js"></script>
 </html>
 
