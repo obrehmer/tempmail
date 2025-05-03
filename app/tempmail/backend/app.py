@@ -9,7 +9,7 @@ app.secret_key = 'super-secret-key'
 socketio = SocketIO(app)
 
 # Speicherort für empfangene Mails
-EMAIL_DIR = "/var/www/tempmail/backend/emails"
+EMAIL_DIR = "/var/tempmail/mails"
 TIMER_DURATION = 120  # 2 Minuten in Sekunden
 ALIAS_LIFETIME = timedelta(minutes=2)
 

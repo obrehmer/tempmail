@@ -8,7 +8,7 @@ from pathlib import Path
 import pwd
 import grp
 
-EMAIL_STORAGE_BASE = "/var/www/tempmail/backend/emails"
+EMAIL_STORAGE_BASE = "/var/tempmail/mails"
 TARGET_USER = "www-data"
 LOG_FILE = "/var/log/receive_mail.log"
 
