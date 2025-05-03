@@ -18,7 +18,7 @@ jobs:
       - run:
           name: deploy content
           command: |
-            rsync . -av --delete-after --force -e "ssh -i SHA256:cYT+MdKiciOdZmO1GtAj42sxDZgb8YLH0UmT+9JMZeU -o 'StrictHostKeyChecking no'" app/tempmail/backend $user@$host:/$dstdir/
+            rsync app/tempmail/backend -av --delete-after --force -e "ssh -i SHA256:cYT+MdKiciOdZmO1GtAj42sxDZgb8YLH0UmT+9JMZeU -o 'StrictHostKeyChecking no'"  $user@$host:/$dstdir/
       - run:
           name: correct perm
           command: |
