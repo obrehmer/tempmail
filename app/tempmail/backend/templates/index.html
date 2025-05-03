@@ -13,8 +13,9 @@
 </head>
 <body>
   <div class="container">
+    <!-- Main header with email address -->
     <h1>Your temporary email address</h1>
-<br><br>
+    
     <p style="max-width: 600px;">
       This is a disposable, temporary email address intended for spam protection and one-time use only.
       <strong>You can only receive emails</strong> — sending is not supported.
@@ -22,6 +23,7 @@
       Use it to protect your personal inbox from spam or sign up anonymously.
     </p>
 
+    <!-- Display the email address -->
     <p>
       <strong>{{ email }}</strong><br>
       {% if remaining_minutes <= 0 and remaining_seconds <= 0 %}
@@ -31,11 +33,11 @@
       {% endif %}
     </p>
 
+    <!-- Refresh inbox button -->
     <button onclick="location.reload()">🔄 Refresh inbox</button>
 
-<br><br>
+    <!-- Inbox Section -->
     <h2>Inbox</h2>
-<br><br>
     <ul>
       {% for mail in emails %}
         <li class="tile">
@@ -50,6 +52,7 @@
     </ul>
   </div>
 
+  <!-- Include the countdown timer logic from the external JavaScript file -->
   <script>
     window.remainingTime = {{ session['remaining_time'] | default(0) }};
   </script>

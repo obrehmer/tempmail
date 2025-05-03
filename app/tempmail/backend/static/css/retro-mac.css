@@ -1,5 +1,4 @@
 /* retro-mac.css – 90s MacOS Style */
-
 @font-face {
   font-family: 'Chicago';
   src: url('/static/fonts/ChicagoFLF.woff2') format('woff2');
@@ -8,7 +7,7 @@
 }
 
 body {
-  background-color: #c3c7cb;
+  background-color: #d0d0d0; /* Ein dezenteres Grau für den Hintergrund */
   font-family: 'Chicago', 'Geneva', sans-serif;
   color: black;
   padding: 2rem;
@@ -17,9 +16,10 @@ body {
 
 h1, h2 {
   font-weight: normal;
-  border-bottom: 1px solid #999;
+  border-bottom: 2px solid #888; /* Etwas kräftigerer Rahmen für Überschriften */
   padding-bottom: 4px;
   margin-top: 0;
+  color: #000; /* Schwarze Farbe für Texte */
 }
 
 .container {
@@ -42,17 +42,29 @@ h1, h2 {
 
 button {
   font-family: 'Chicago', sans-serif;
-  background-color: #c3c7cb;
-  border: 2px solid #444;
+  background-color: #c3c7cb; /* Hintergrundfarbe */
+  border: 2px solid #444;  /* Etwas dunklerer Rand */
   padding: 4px 10px;
   cursor: pointer;
   margin-top: 10px;
   box-shadow: inset -1px -1px 0 #000, inset 1px 1px 0 #fff;
+  color: black;
+  font-size: 14px; /* Kleinere Schriftgröße */
+  text-transform: uppercase; /* Text in Großbuchstaben */
+}
+
+button:hover {
+  background-color: #a5a5a5; /* Dunklerer Hintergrund bei Hover */
+  border: 2px solid #333; /* Dunklerer Rand bei Hover */
 }
 
 a {
-  color: black;
+  color: #444; /* Dunkles Grau statt Schwarz */
   text-decoration: underline;
+}
+
+a:hover {
+  color: #222; /* Dunkleres Grau bei Hover */
 }
 
 pre {
@@ -62,5 +74,39 @@ pre {
   overflow-x: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
+  font-size: 14px; /* Kleine Schriftgröße für Pre-Text */
+  color: #333; /* Dunklerer Text für Pre */
 }
+
+/* Stil für die E-Mail-Adresse */
+.email {
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+  background-color: #e0e0e0;
+  padding: 10px;
+  border-radius: 5px;
+  display: inline-block;
+  text-align: center;
+  margin: 10px 0;
+  box-shadow: inset -1px -1px 0 #000, inset 1px 1px 0 #fff;
+}
+
+/* Styling für das Eingabefeld */
+input[type="text"] {
+  background-color: #fff;
+  border: 2px solid #888;
+  padding: 5px;
+  width: 100%;
+  font-size: 14px;
+  color: #000;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+input[type="text"]:focus {
+  border-color: #444; /* Fokus-Randfarbe */
+  outline: none;
+}
+
 
