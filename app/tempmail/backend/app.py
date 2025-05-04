@@ -1,5 +1,6 @@
 from flask import Flask, render_template, session, redirect, url_for
 from flask_socketio import SocketIO
+from flask import send_from_directory
 import os, json, uuid
 import time, random, string
 from datetime import datetime, timedelta
@@ -90,6 +91,15 @@ def delete_emails(email_id):
         for fname in os.listdir(inbox_dir):
             os.remove(os.path.join(inbox_dir, fname))
     return redirect(url_for('index'))
+
+
+@app.route('/sitemap.xml')
+def sitemap():
+    return send_from_directory('static/meta', 'sitemap.xml')
+
+@app.route('/robots.txt')
+def robots():
+    return send_from_directory('static/meta', 'robots.txt')
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
