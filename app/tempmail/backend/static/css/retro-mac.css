@@ -192,3 +192,20 @@ input[type="text"]:focus {
   }
 }
 
+/* Ensure the image is properly sized and responsive */
+.email-icon {
+  width: 100px;         /* Set a default size */
+  height: auto;         /* Maintain the aspect ratio */
+  margin-left: 20px;    /* Add space to the left of the image */
+  float: right;         /* Align the image to the right */
+  max-width: 100%;      /* Ensure it doesn’t exceed its container width */
+}
+
+/* Media Query for smaller devices */
+@media screen and (max-width: 600px) {
+  .email-icon {
+    width: 50px;        /* Make the icon smaller on mobile devices */
+    height: auto;       /* Maintain aspect ratio */
+  }
+}
+
