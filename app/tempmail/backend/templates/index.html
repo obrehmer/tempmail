@@ -15,7 +15,7 @@
   <meta property="og:description" content="No signup. Just a quick inbox for those one-time emails. No storage, no tracking.">
   <meta property="og:url" content="https://tempmail.olifani.de/">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://tempmail.olifani.eu/static/images/social-preview.png">
+  <meta property="og:image" content="https://tempmail.olifani.de/static/images/social-preview.png">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
@@ -28,32 +28,35 @@
 </head>
 <body>
   <div class="container">
-    <!-- Main header with email address -->
     <div class="window-header">Your temporary email address</div>    
 
-    <p style="max-width: 600px;">
-      This is a disposable, temporary email address intended for spam protection and one-time use only.
-      <strong>You can only receive emails</strong> — sending is not supported.
-      Messages are <strong>not stored permanently</strong> and will be deleted after 5 minutes.
-      Use it to protect your personal inbox from spam or sign up anonymously.
-      <br><br>
-      <a href="/why-temp-email">Why use temp email?</a>
-    </p>
+    <!-- INFO SECTION WITH IMAGE -->
+    <div class="info-section">
+      <div class="info-text">
+        This is a disposable, temporary email address intended for spam protection and one-time use only.
+        <strong>You can only receive emails</strong> — sending is not supported.
+        Messages are <strong>not stored permanently</strong> and will be deleted after 5 minutes.
+        Use it to protect your personal inbox from spam or sign up anonymously.
+        <br><br>
+        <a href="/why-temp-email">Why use temp email?</a>
+      </div>
+      <div class="info-image">
+        <img src="/static/images/mac-email-icon.png" alt="Retro Mac email icon">
+      </div>
+    </div>
 
-    <!-- Display the email address -->
-    <p>
-      <div class="email-display">{{ email }}</div>
-      {% if remaining_minutes <= 0 and remaining_seconds <= 0 %}
-        <strong>The email address has expired. A new one has been created.</strong>
-      {% else %}
-        <p>This email address is only valid for 5 minutes. Remaining time: <span id="countdown-timer"></span></p>
-      {% endif %}
-    </p>
+    <!-- DISPLAY EMAIL -->
+    <div class="email-display">{{ email }}</div>
+    {% if remaining_minutes <= 0 and remaining_seconds <= 0 %}
+      <strong>The email address has expired. A new one has been created.</strong>
+    {% else %}
+      <p>This email address is only valid for 5 minutes. Remaining time: <span id="countdown-timer"></span></p>
+    {% endif %}
 
-    <!-- Refresh inbox button -->
+    <!-- REFRESH BUTTON -->
     <button class="spaced-bottom" onclick="location.reload()">🔄 Refresh inbox</button>
 
-    <!-- Inbox Section -->
+    <!-- EMAIL LIST -->
     <ul>
       {% for mail in emails %}
         <li class="tile">
@@ -68,7 +71,6 @@
     </ul>
   </div>
 
-  <!-- Include the countdown timer logic from the external JavaScript file -->
   <script>
     window.remainingTime = {{ session['remaining_time'] | default(0) }};
   </script>
