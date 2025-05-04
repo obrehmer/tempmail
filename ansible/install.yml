@@ -44,6 +44,10 @@
         dest: /root/.ssh/authorized_keys
         mode: 0600
 
+    - name: set timezone
+      timezone:
+        name: Europe/Oslo
+
     - name: change term env
       copy:
         dest: /etc/profile.d/terminal.sh
@@ -92,7 +96,15 @@
         comment: Allow HTTP (port 80) from Cloudflare only
       loop: "{{ cloudflare_sources }}"
 
-
+    - name: disable sending emails
+      iptables:
+        chain: OUTPUT
+        protocol: tcp
+        destination_port: "{{ smtp }}"
+        jump: REJECT
+        action: insert
+        rule_num: 1
+        comment: Prevent sending emails
 
     - name: set iptables rules
       iptables:
