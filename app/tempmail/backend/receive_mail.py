@@ -63,6 +63,7 @@ def main():
     timestamp = int(time.time())
     filename = inbox_dir / f"{timestamp}.json"
 
+    # E-Mail-Daten als JSON speichern
     with open(filename, "w") as f:
         json.dump({
             "from": from_address,
@@ -72,7 +73,9 @@ def main():
         }, f, ensure_ascii=False, indent=2)
 
     set_ownership(filename, TARGET_USER)
-    log(f"E-Mail für {to_address} gespeichert unter {filename}")
+
+    # Log-Eintrag mit allen relevanten Details
+    log(f"Received email: To={to_address}, From={from_address}, Subject={subject}")
 
 if __name__ == "__main__":
     main()
