@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://tempmail.olifani.de/</loc>
+    <loc>http://tempmail.olifani.eu/</loc>
     <lastmod>2025-05-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>http://tempmail.olifani.de/email-view</loc>
+    <loc>http://tempmail.olifani.eu/email-view</loc>
     <lastmod>2025-05-03</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://tempmail.olifani.de/why-temp-email</loc>
+    <loc>https://tempmail.olifani.eu/why-temp-email</loc>
     <lastmod>2025-05-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
