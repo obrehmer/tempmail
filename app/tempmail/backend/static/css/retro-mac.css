@@ -7,7 +7,7 @@
 }
 
 body {
-  background-color: #d0d0d0; /* Ein dezenteres Grau für den Hintergrund */
+  background-color: #d0d0d0; /* Lighter background */
   font-family: 'Chicago', 'Geneva', sans-serif;
   color: black;
   padding: 2rem;
@@ -16,10 +16,10 @@ body {
 
 h1, h2 {
   font-weight: normal;
-  border-bottom: 2px solid #888; /* Etwas kräftigerer Rahmen für Überschriften */
+  border-bottom: 2px solid #888; /* Darker border for headings */
   padding-bottom: 4px;
   margin-top: 0;
-  color: #000; /* Schwarze Farbe für Texte */
+  color: #000; /* Black text for headings */
 }
 
 .container {
@@ -42,29 +42,29 @@ h1, h2 {
 
 button {
   font-family: 'Chicago', sans-serif;
-  background-color: #c3c7cb; /* Hintergrundfarbe */
-  border: 2px solid #444;  /* Etwas dunklerer Rand */
+  background-color: #c3c7cb; /* Background color */
+  border: 2px solid #444;  /* Darker border */
   padding: 4px 10px;
   cursor: pointer;
   margin-top: 10px;
   box-shadow: inset -1px -1px 0 #000, inset 1px 1px 0 #fff;
   color: black;
-  font-size: 14px; /* Kleinere Schriftgröße */
-  text-transform: uppercase; /* Text in Großbuchstaben */
+  font-size: 14px; /* Smaller font size */
+  text-transform: uppercase; /* Uppercase text */
 }
 
 button:hover {
-  background-color: #a5a5a5; /* Dunklerer Hintergrund bei Hover */
-  border: 2px solid #333; /* Dunklerer Rand bei Hover */
+  background-color: #a5a5a5; /* Darker background on hover */
+  border: 2px solid #333; /* Darker border on hover */
 }
 
 a {
-  color: #444; /* Dunkles Grau statt Schwarz */
+  color: #444; /* Dark gray instead of black */
   text-decoration: underline;
 }
 
 a:hover {
-  color: #222; /* Dunkleres Grau bei Hover */
+  color: #222; /* Darker gray on hover */
 }
 
 pre {
@@ -74,11 +74,11 @@ pre {
   overflow-x: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
-  font-size: 14px; /* Kleine Schriftgröße für Pre-Text */
-  color: #333; /* Dunklerer Text für Pre */
+  font-size: 14px; /* Smaller font size for pre text */
+  color: #333; /* Darker text for pre */
 }
 
-/* Stil für die E-Mail-Adresse */
+/* Email Display Styles */
 .email {
   font-size: 24px;
   font-weight: bold;
@@ -92,7 +92,7 @@ pre {
   box-shadow: inset -1px -1px 0 #000, inset 1px 1px 0 #fff;
 }
 
-/* Styling für das Eingabefeld */
+/* Input Field Styling */
 input[type="text"] {
   background-color: #fff;
   border: 2px solid #888;
@@ -105,13 +105,13 @@ input[type="text"] {
 }
 
 input[type="text"]:focus {
-  border-color: #444; /* Fokus-Randfarbe */
+  border-color: #444; /* Focus border color */
   outline: none;
 }
 
-
+/* Spacing for Bottom Elements */
 .spaced-bottom {
-  margin-bottom: 40px; /* Oder jeder gewünschte Wert */
+  margin-bottom: 40px;
 }
 
 .window-header {
@@ -150,5 +150,102 @@ input[type="text"]:focus {
   text-align: center;
   box-shadow: inset -1px -1px 0 #000, inset 1px 1px 0 #fff;
   font-family: 'Chicago', 'Geneva', sans-serif;
+}
+
+/* Responsive Design */
+
+/* Mobile Devices */
+@media (max-width: 600px) {
+  body {
+    padding: 1rem;
+  }
+
+  .container {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .tile {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .email-display {
+    font-size: 18px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+  }
+
+  .window-header {
+    font-size: 20px;
+    padding: 10px;
+    background-color: #d3d3d3;
+    border-bottom: 2px solid #bbb;
+    text-align: center;
+  }
+}
+
+/* Tablet Devices */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .container {
+    width: 90%;
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  .tile {
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  button {
+    font-size: 16px;
+    padding: 8px 14px;
+  }
+
+  .email-display {
+    font-size: 20px;
+    padding: 12px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+  }
+}
+
+/* Desktop Devices */
+@media (min-width: 1025px) {
+  .container {
+    width: 800px;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+
+  .tile {
+    font-size: 16px;
+    padding: 14px;
+  }
+
+  button {
+    font-size: 18px;
+    padding: 10px 16px;
+  }
+
+  .email-display {
+    font-size: 22px;
+    padding: 14px;
+    background-color: #e7e7e7;
+    border: 1px solid #bbb;
+  }
 }
 
