@@ -8,10 +8,15 @@
     smtp: 25
     packages:
       - python3
-      - python3-venv
       - git
       - curl
       - iptables-persistent
+      - python3-flask
+      - python3-flask-socketio
+      - python3-eventlet
+      - npm
+      - vite
+      - postfix
     user: root
     key_file: authorized_keys.vault
     cloudflare: true
@@ -115,7 +120,9 @@
       
     - name: create dir for email data
       file:
-        path: /var/tempmail/mails
+        path: 
+          - /var/tempmail/mails
+          - /var/www/tempmail
         state: directory
         recurse: yes
         owner: www-data
