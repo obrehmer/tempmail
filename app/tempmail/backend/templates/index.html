@@ -14,17 +14,20 @@
 <body>
   <div class="container">
     <!-- Main header with email address -->
-<div class="window-header">Your temporary email address</div>    
+    <div class="window-header">Your temporary email address</div>    
+
     <p style="max-width: 600px;">
       This is a disposable, temporary email address intended for spam protection and one-time use only.
       <strong>You can only receive emails</strong> — sending is not supported.
       Messages are <strong>not stored permanently</strong> and will be deleted after 5 minutes.
       Use it to protect your personal inbox from spam or sign up anonymously.
+      <br><br>
+      <a href="/why-temp-email">Why use temp email?</a>
     </p>
 
     <!-- Display the email address -->
     <p>
-<div class="email-display">{{ email }}</div>
+      <div class="email-display">{{ email }}</div>
       {% if remaining_minutes <= 0 and remaining_seconds <= 0 %}
         <strong>The email address has expired. A new one has been created.</strong>
       {% else %}
@@ -33,7 +36,8 @@
     </p>
 
     <!-- Refresh inbox button -->
-<button class="spaced-bottom" onclick="location.reload()">🔄 Refresh inbox</button>
+    <button class="spaced-bottom" onclick="location.reload()">🔄 Refresh inbox</button>
+
     <!-- Inbox Section -->
     <ul>
       {% for mail in emails %}

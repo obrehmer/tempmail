@@ -101,6 +101,11 @@ def sitemap():
 def robots():
     return send_from_directory('static/meta', 'robots.txt')
 
+
+@app.route('/why-temp-email')
+def why_temp_email():
+    return render_template('why-temp-email.html')
+
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
 
