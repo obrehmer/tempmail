@@ -77,7 +77,7 @@ def index():
     session['remaining_time'] = remaining_time.total_seconds()
 
     return render_template("index.html",
-                           email=f"{email_id}@olifani.eu",
+                           email=f"{email_id}@inboxcl.xyz",
                            emails=emails,
                            email_id=email_id,
                            remaining_minutes=remaining_minutes,

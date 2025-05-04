@@ -23,7 +23,6 @@ def sanitize(s):
     return ''.join(c for c in s if c.isalnum() or c in ('@', '.', '-', '_'))
 
 def extract_email_id(to_address):
-    # z. B. aus xyz123@olifani.eu -> xyz123
     return to_address.split('@')[0]
 
 def set_ownership(path, user):
