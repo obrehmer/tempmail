@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://tempmail.olifani.eu/sitemap_index.xml
+Sitemap: https://tempmail.olifani.eu/sitemap.xml
