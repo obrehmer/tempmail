@@ -97,6 +97,11 @@ def delete_emails(email_id):
 def sitemap():
     return send_from_directory('static/meta', 'sitemap.xml')
 
+@app.route('/sitemap_index.xml')
+def sitemap():
+    return send_from_directory('static/meta', 'sitemap_index.xml')
+
+
 @app.route('/robots.txt')
 def robots():
     return send_from_directory('static/meta', 'robots.txt')
