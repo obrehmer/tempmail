@@ -101,11 +101,9 @@ def sitemap():
 def sitemap():
     return send_from_directory('static/meta', 'sitemap_index.xml')
 
-
 @app.route('/robots.txt')
 def robots():
     return send_from_directory('static/meta', 'robots.txt')
-
 
 @app.route('/why-temp-email')
 def why_temp_email():
