@@ -4,6 +4,8 @@ from flask import send_from_directory
 import os, json, uuid
 import time, random, string
 from datetime import datetime, timedelta
+from pathlib import Path
+import pwd
 
 app = Flask(__name__)
 app.secret_key = 'super-secret-key'
@@ -13,6 +15,7 @@ socketio = SocketIO(app)
 EMAIL_DIR = "/var/tempmail/mails"
 TIMER_DURATION = 300  # 2 Minuten in Sekunden
 ALIAS_LIFETIME = timedelta(minutes=5)
+TARGET_USER = "www-data"
 
 def generate_email():
     return ''.join(random.choices(string.ascii_lowercase, k=5))
@@ -25,6 +28,33 @@ def check_alias_expiration():
             # Alias ist abgelaufen, neuen Alias generieren
             return True
     return False
+
+def create_welcome_email(email_id):
+    inbox_dir = Path(EMAIL_DIR) / email_id
+    inbox_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        pw_record = pwd.getpwnam(TARGET_USER)
+        uid = pw_record.pw_uid
+        gid = pw_record.pw_gid
+        os.chown(inbox_dir, uid, gid)
+    except Exception:
+        pass
+
+    filename = inbox_dir / f"{int(time.time())}_welcome.json"
+    welcome_email = {
+        "from": "support@inboxcl.xyz",
+        "to": f"{email_id}@inboxcl.xyz",
+        "subject": "Welcome to tempmail.olifani.eu",
+        "body": "This is your new temporary inbox. You can receive emails here for the next 5 minutes."
+    }
+
+    with open(filename, "w") as f:
+        json.dump(welcome_email, f, indent=2)
+
+    try:
+        os.chown(filename, uid, gid)
+    except Exception:
+        pass
 
 @app.route('/email/<email_id>/<filename>')
 def view_email(email_id, filename):
@@ -52,6 +82,7 @@ def index():
         session.clear()
         session['email_id'] = generate_email()
         session['email_created_at'] = time.time()
+        create_welcome_email(session['email_id'])  # Begrüßungsmail erzeugen
 
     email_id = session['email_id']
     inbox_dir = os.path.join(EMAIL_DIR, email_id)
@@ -91,7 +122,6 @@ def delete_emails(email_id):
         for fname in os.listdir(inbox_dir):
             os.remove(os.path.join(inbox_dir, fname))
     return redirect(url_for('index'))
-
 
 @app.route('/sitemap-side.xml')
 def sitemap():
