@@ -98,7 +98,7 @@ def sitemap():
     return send_from_directory('static/meta', 'sitemap.xml')
 
 @app.route('/sitemap_index.xml')
-def sitemap():
+def sitemap_index():
     return send_from_directory('static/meta', 'sitemap_index.xml')
 
 @app.route('/robots.txt')
