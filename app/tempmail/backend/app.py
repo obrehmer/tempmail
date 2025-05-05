@@ -42,7 +42,7 @@ def create_welcome_email(email_id):
 
     filename = inbox_dir / f"{int(time.time())}_welcome.json"
     welcome_email = {
-        "from": "support@inboxcl.xyz",
+        "from": "noreply@olifani.eu",
         "to": f"{email_id}@inboxcl.xyz",
         "subject": "Welcome to tempmail.olifani.eu",
         "body": "This is your new temporary inbox. You can receive emails here for the next 5 minutes."
