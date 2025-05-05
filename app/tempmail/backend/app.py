@@ -39,7 +39,7 @@ def view_email(email_id, filename):
 
     return render_template('email_view.html', mail=mail)
 
-@app.route('/')
+@app.route('/index.html')
 def index():
     # Überprüfen, ob der Alias abgelaufen ist
     if 'email_id' not in session or check_alias_expiration():
@@ -109,7 +109,7 @@ def sitemap_pages():
 def robots():
     return send_from_directory('static/meta', 'robots.txt')
 
-@app.route('/why-temp-email')
+@app.route('/why-temp-email.html')
 def why_temp_email():
     return render_template('why-temp-email.html')
 
