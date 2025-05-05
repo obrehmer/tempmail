@@ -101,6 +101,10 @@ def sitemap():
 def sitemap_index():
     return send_from_directory('static/meta', 'sitemap_index.xml')
 
+@app.route('/sitemap_pages.xml')
+def sitemap_pages():
+    return send_from_directory('static/meta', 'sitemap_pages.xml')
+
 @app.route('/robots.txt')
 def robots():
     return send_from_directory('static/meta', 'robots.txt')
