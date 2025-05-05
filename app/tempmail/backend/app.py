@@ -93,17 +93,9 @@ def delete_emails(email_id):
     return redirect(url_for('index'))
 
 
-@app.route('/sitemap.xml')
+@app.route('/sitemap-side.xml')
 def sitemap():
     return send_from_directory('static/meta', 'sitemap.xml')
-
-@app.route('/sitemap_index.xml')
-def sitemap_index():
-    return send_from_directory('static/meta', 'sitemap_index.xml')
-
-@app.route('/sitemap_pages.xml')
-def sitemap_pages():
-    return send_from_directory('static/meta', 'sitemap_pages.xml')
 
 @app.route('/robots.txt')
 def robots():
