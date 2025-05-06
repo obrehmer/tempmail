@@ -16,7 +16,7 @@ EMAIL_DIR = "/var/tempmail/mails"
 TIMER_DURATION = 300  # 2 Minuten in Sekunden
 ALIAS_LIFETIME = timedelta(minutes=5)
 TARGET_USER = "www-data"
-STATS_FILE = "/var/tempmail/stats.json"
+STATS_FILE = "/var/tempmail/misc/stats.json"
 
 def generate_email():
     return ''.join(random.choices(string.ascii_lowercase, k=5))
@@ -150,7 +150,7 @@ def robots():
 def why_temp_email():
     return render_template('why-temp-email.html')
 
-@app.route("/stats.html")
+@app.route("/stats")
 def stats():
     if os.path.exists(STATS_FILE):
         with open(STATS_FILE, "r") as f:

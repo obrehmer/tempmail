@@ -17,6 +17,8 @@
       - npm
       - vite
       - postfix
+      - apache2
+      - apache2-utils
     user: root
     key_file: authorized_keys.vault
     cloudflare: true
@@ -36,6 +38,10 @@
       - 104.24.0.0/14
       - 172.64.0.0/13
       - 131.0.72.0/22
+    server_name: tempmail.olifani.eu
+    apache_log_dir: /var/log/apache2
+    htpasswd_user: atomino
+    htpasswd_password: vault_htpasswd_password.vault
 
   tasks:
     - name: Copy private key to remote server
@@ -135,13 +141,60 @@
         path: 
           - /var/tempmail/mails
           - /var/www/tempmail
+          - /var/tempmail/misc
         state: directory
         recurse: yes
         owner: www-data
         group: www-data
         mode: 0750
 
+    - name: Write Apache VirtualHost config for tempmail
+      copy:
+        dest: /etc/apache2/sites-available/tempmail.conf
+        content: |
+          <VirtualHost *:80>
+              ServerName {{ server_name }}
+
+              ErrorLog {{ apache_log_dir }}/tempmail_error.log
+              CustomLog {{ apache_log_dir }}/tempmail_access.log combined
+
+              RewriteEngine on
+              RewriteCond %{REQUEST_URI} ^/$
+              RewriteRule ^/$ /index.html [PT]
+
+              <Location "/stats">
+                  AuthType Basic
+                  AuthName "Restricted Stats Area"
+                  AuthUserFile /var/www/.htpasswd
+                  Require valid-user
+              </Location>
+
+              RewriteCond %{HTTP:Upgrade} =websocket [NC]
+              RewriteRule ^/socket.io/(.*) ws://127.0.0.1:5000/socket.io/$1 [P,L]
+
+              ProxyPass /socket.io http://127.0.0.1:5000/socket.io
+              ProxyPassReverse /socket.io http://127.0.0.1:5000/socket.io
+
+              ProxyPass / http://127.0.0.1:5000/
+              ProxyPassReverse / http://127.0.0.1:5000/
+          </VirtualHost>
+      notify: Restart Apache
+
+    - name: Ensure .htpasswd with user
+      community.general.htpasswd:
+        path: /var/www/.htpasswd
+        name: "{{ htpasswd_user }}"
+        password: "{{ htpasswd_password }}"
+        crypt_scheme: md5
+        create: yes
+      notify: Restart Apache
+
   handlers:
 
     - name: Reload systemd daemon
       command: systemctl daemon-reload
+
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
