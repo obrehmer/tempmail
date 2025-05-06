@@ -1,6 +1,5 @@
-from flask import Flask, render_template, session, redirect, url_for
+from flask import Flask, render_template, session, redirect, url_for, send_from_directory, abort
 from flask_socketio import SocketIO
-from flask import send_from_directory
 import os, json, uuid
 import time, random, string
 from datetime import datetime, timedelta
@@ -11,22 +10,31 @@ app = Flask(__name__)
 app.secret_key = 'super-secret-key'
 socketio = SocketIO(app)
 
-# Speicherort für empfangene Mails
 EMAIL_DIR = "/var/tempmail/mails"
 TIMER_DURATION = 300  # 2 Minuten in Sekunden
 ALIAS_LIFETIME = timedelta(minutes=5)
 TARGET_USER = "www-data"
 STATS_FILE = "/var/tempmail/misc/stats.json"
 
+def ensure_stats_file():
+    initial_data = {}
+    try:
+        os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
+        if not os.path.exists(STATS_FILE):
+            with open(STATS_FILE, 'w') as f:
+                json.dump(initial_data, f)
+            pw_record = pwd.getpwnam(TARGET_USER)
+            os.chown(STATS_FILE, pw_record.pw_uid, pw_record.pw_gid)
+    except Exception as e:
+        print(f"Fehler beim Erstellen von stats.json: {e}")
+
 def generate_email():
     return ''.join(random.choices(string.ascii_lowercase, k=5))
 
 def check_alias_expiration():
-    # Überprüfen, ob der Alias abgelaufen ist
     if 'email_created_at' in session:
         created_at = datetime.fromtimestamp(session['email_created_at'])
         if datetime.now() - created_at > ALIAS_LIFETIME:
-            # Alias ist abgelaufen, neuen Alias generieren
             return True
     return False
 
@@ -61,9 +69,11 @@ def log_address_creation():
     today = datetime.utcnow().strftime("%Y-%m-%d")
     stats = {}
 
-    if os.path.exists(STATS_FILE):
+    try:
         with open(STATS_FILE, "r") as f:
             stats = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        stats = {}
 
     stats[today] = stats.get(today, 0) + 1
 
@@ -85,9 +95,7 @@ def view_email(email_id, filename):
 
 @app.route('/index.html')
 def index():
-    # Überprüfen, ob der Alias abgelaufen ist
     if 'email_id' not in session or check_alias_expiration():
-        # Wenn abgelaufen, E-Mails löschen und Session zurücksetzen
         if 'email_id' in session:
             inbox_dir = os.path.join(EMAIL_DIR, session['email_id'])
             if os.path.exists(inbox_dir):
@@ -108,10 +116,9 @@ def index():
             fpath = os.path.join(inbox_dir, fname)
             with open(fpath) as f:
                 mail = json.load(f)
-                mail['filename'] = fname  # ← Das ist entscheidend für den Link
+                mail['filename'] = fname
                 emails.append(mail)
 
-    # Berechne die verbleibende Zeit
     remaining_time = ALIAS_LIFETIME - (datetime.now() - datetime.fromtimestamp(session['email_created_at']))
     remaining_minutes, remaining_seconds = divmod(int(remaining_time.total_seconds()), 60)
 
@@ -119,7 +126,6 @@ def index():
         remaining_minutes = 0
         remaining_seconds = 0
 
-    # Verbleibende Zeit in der Session speichern
     session['remaining_time'] = remaining_time.total_seconds()
 
     return render_template("index.html",
@@ -133,7 +139,6 @@ def index():
 def delete_emails(email_id):
     inbox_dir = os.path.join(EMAIL_DIR, email_id)
     if os.path.exists(inbox_dir):
-        # Alle E-Mails löschen
         for fname in os.listdir(inbox_dir):
             os.remove(os.path.join(inbox_dir, fname))
     return redirect(url_for('index'))
@@ -152,20 +157,23 @@ def why_temp_email():
 
 @app.route("/stats")
 def stats():
-    if os.path.exists(STATS_FILE):
+    try:
         with open(STATS_FILE, "r") as f:
             stats = json.load(f)
-    else:
+    except (FileNotFoundError, json.JSONDecodeError):
         stats = {}
 
     return render_template("stats.html", stats=stats)
-
-app = Flask(__name__)
 
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('404.html'), 404
 
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('500.html'), 500
+
 if __name__ == '__main__':
+    ensure_stats_file()
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
 
