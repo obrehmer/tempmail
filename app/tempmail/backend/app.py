@@ -160,6 +160,12 @@ def stats():
 
     return render_template("stats.html", stats=stats)
 
+app = Flask(__name__)
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
 
