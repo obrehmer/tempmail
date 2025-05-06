@@ -161,8 +161,15 @@
         owner: www-data
         group: www-data
         mode: 0750
-
-
+    - name: Create empty stats.json if not exists
+      copy:
+        dest: /var/tempmail/misc/stats.json
+        content: "{}\n"
+        owner: www-data
+        group: www-data
+        mode: '0644'
+        force: no 
+    
 
     - name: Write Apache VirtualHost config for tempmail
       copy:
