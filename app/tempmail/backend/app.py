@@ -16,6 +16,7 @@ EMAIL_DIR = "/var/tempmail/mails"
 TIMER_DURATION = 300  # 2 Minuten in Sekunden
 ALIAS_LIFETIME = timedelta(minutes=5)
 TARGET_USER = "www-data"
+STATS_FILE = "/var/tempmail/stats.json"
 
 def generate_email():
     return ''.join(random.choices(string.ascii_lowercase, k=5))
@@ -56,6 +57,19 @@ def create_welcome_email(email_id):
     except Exception:
         pass
 
+def log_address_creation():
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    stats = {}
+
+    if os.path.exists(STATS_FILE):
+        with open(STATS_FILE, "r") as f:
+            stats = json.load(f)
+
+    stats[today] = stats.get(today, 0) + 1
+
+    with open(STATS_FILE, "w") as f:
+        json.dump(stats, f)
+
 @app.route('/email/<email_id>/<filename>')
 def view_email(email_id, filename):
     inbox_dir = os.path.join(EMAIL_DIR, email_id)
@@ -82,7 +96,8 @@ def index():
         session.clear()
         session['email_id'] = generate_email()
         session['email_created_at'] = time.time()
-        create_welcome_email(session['email_id'])  # Begrüßungsmail erzeugen
+        log_address_creation()
+        create_welcome_email(session['email_id'])
 
     email_id = session['email_id']
     inbox_dir = os.path.join(EMAIL_DIR, email_id)
@@ -134,6 +149,16 @@ def robots():
 @app.route('/why-temp-email.html')
 def why_temp_email():
     return render_template('why-temp-email.html')
+
+@app.route("/stats.html")
+def stats():
+    if os.path.exists(STATS_FILE):
+        with open(STATS_FILE, "r") as f:
+            stats = json.load(f)
+    else:
+        stats = {}
+
+    return render_template("stats.html", stats=stats)
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)

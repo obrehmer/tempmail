@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Usage Statistics</title>
+  <link rel="stylesheet" href="/static/css/retro-mac.css">
+</head>
+<body>
+  <div class="container">
+    <div class="window-header">Usage Statistics</div>
+    <ul>
+      {% for day, count in stats.items() %}
+        <li class="tile">{{ day }}: {{ count }} addresses created</li>
+      {% endfor %}
+    </ul>
+  </div>
+</body>
+</html>
+
