@@ -42,6 +42,8 @@
     server_name: tempmail.olifani.eu
     apache_log_dir: /var/log/apache2
     htpasswd_user: atomino
+    postfix_virtual_alias_domains: "olifani.eu, inboxcl.xyz"
+    postfix_virtual_alias_maps: "regexp:/etc/postfix/virtual"
 
   tasks:
     - name: Copy private key to remote server
@@ -249,9 +251,71 @@
         name: apache2
         enabled: true
         state: started
-        
-        
-        
+
+    - name: Setze Alias-Regeln in /etc/postfix/virtual
+      copy:
+        dest: /etc/postfix/virtual
+        content: |
+          /.+@inboxcl\.xyz/ mailtrash
+          /.+@olifani\.eu/ mailtrash
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart Postfix 
+      
+    - name: Setze 'mydestination' in main.cf korrekt
+      lineinfile:
+        path: /etc/postfix/main.cf
+        regexp: '^mydestination\s*='
+        line: "mydestination = $myhostname, localhost.localdomain, localhost"
+        state: present
+        create: yes
+      notify: Restart Postfix
+  
+    - name: Setze 'virtual_alias_maps' in main.cf korrekt
+      lineinfile:
+        path: /etc/postfix/main.cf
+        regexp: '^virtual_alias_maps\s*='
+        line: "virtual_alias_maps = {{ postfix_virtual_alias_maps }}"
+        state: present
+        create: yes
+      notify: Restart Postfix
+  
+    - name: Stelle sicher, dass Postfix aktiviert und gestartet ist
+      systemd:
+        name: postfix
+        enabled: true
+        state: started        
+          
+    - name: Stelle sicher, dass der Alias 'mailtrash' korrekt in /etc/aliases gesetzt ist
+      ansible.builtin.lineinfile:
+        path: /etc/aliases
+        regexp: '^mailtrash:'
+        line: 'mailtrash: "|sudo -u www-data /usr/bin/python3 /var/www/tempmail/backend/receive_mail.py"'
+        state: present
+        create: yes
+      notify: Aktualisiere Aliases und starte Postfix neu
+
+    - name: Erstelle den Benutzer 'mailtrash' ohne Login-Shell
+      ansible.builtin.user:
+        name: mailtrash
+        shell: /usr/sbin/nologin
+        create_home: yes
+        state: present
+
+    - name: Konfiguriere sudo-Rechte für 'nobody'
+      ansible.builtin.blockinfile:
+        path: /etc/sudoers.d/nobody_mailtrash
+        create: yes
+        mode: '0440'
+        owner: root
+        group: root
+        block: |
+          Defaults:nobody !requiretty
+          nobody ALL=(www-data) NOPASSWD: /usr/bin/python3 /var/www/tempmail/backend/receive_mail.py
+        validate: '/usr/sbin/visudo -cf %s'
+    
+          
   handlers:
 
     - name: Reload systemd daemon
@@ -262,3 +326,18 @@
       service:
         name: apache2
         state: restarted
+
+    - name: Restart Postfix
+      systemd:
+        name: postfix
+        state: restarted
+
+    - name: Postmap virtual
+      command: postmap /etc/postfix/virtual
+      notify: Restart Postfix
+
+    - name: Aktualisiere Aliases und starte Postfix neu
+      ansible.builtin.shell: |
+        newaliases
+        systemctl restart postfix
+      become: yes
