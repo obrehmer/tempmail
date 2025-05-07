@@ -20,7 +20,6 @@
       - apache2
       - apache2-utils
       - python3-passlib
-    user: root
     key_file: authorized_keys.vault
     cloudflare: true
     cloudflare_sources:
@@ -288,7 +287,7 @@
         state: started        
           
     - name: Stelle sicher, dass der Alias 'mailtrash' korrekt in /etc/aliases gesetzt ist
-      ansible.builtin.lineinfile:
+      lineinfile:
         path: /etc/aliases
         regexp: '^mailtrash:'
         line: 'mailtrash: "|sudo -u www-data /usr/bin/python3 /var/www/tempmail/backend/receive_mail.py"'
@@ -297,14 +296,14 @@
       notify: Aktualisiere Aliases und starte Postfix neu
 
     - name: Erstelle den Benutzer 'mailtrash' ohne Login-Shell
-      ansible.builtin.user:
+      user:
         name: mailtrash
         shell: /usr/sbin/nologin
         create_home: yes
         state: present
 
     - name: Konfiguriere sudo-Rechte für 'nobody'
-      ansible.builtin.blockinfile:
+      blockinfile:
         path: /etc/sudoers.d/nobody_mailtrash
         create: yes
         mode: '0440'
@@ -337,7 +336,7 @@
       notify: Restart Postfix
 
     - name: Aktualisiere Aliases und starte Postfix neu
-      ansible.builtin.shell: |
+      shell: |
         newaliases
         systemctl restart postfix
       become: yes
