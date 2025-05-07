@@ -41,7 +41,7 @@
     server_name: tempmail.olifani.eu
     apache_log_dir: /var/log/apache2
     htpasswd_user: atomino
-    postfix_virtual_alias_domains: "olifani.eu, inboxcl.xyz"
+    postfix_virtual_alias_domains: "inboxcl.xyz"
     postfix_virtual_alias_maps: "regexp:/etc/postfix/virtual"
 
   tasks:
@@ -136,7 +136,7 @@
 
     - name: Save iptables rules (IPv4)
       shell: iptables-save > /etc/iptables/rules.v4
-      
+
     - name: create dir for email data
       file:
         path: /var/tempmail/mails
@@ -161,6 +161,7 @@
         owner: www-data
         group: www-data
         mode: 0750
+
     - name: Create empty stats.json if not exists
       copy:
         dest: /var/tempmail/misc/stats.json
@@ -168,8 +169,7 @@
         owner: www-data
         group: www-data
         mode: '0644'
-        force: no 
-    
+        force: no
 
     - name: Write Apache VirtualHost config for tempmail
       copy:
@@ -208,7 +208,7 @@
       include_vars:
         file: vault_htpasswd_password.vault
         name: vault_secrets
-    
+
     - name: Ensure .htpasswd with user
       community.general.htpasswd:
         path: /var/www/.htpasswd
@@ -225,7 +225,7 @@
           [Unit]
           Description=Tempmail Flask App
           After=network.target
-    
+
           [Service]
           User=www-data
           WorkingDirectory=/var/www/tempmail/backend
@@ -233,7 +233,7 @@
           Restart=always
           Environment=FLASK_ENV=production
           Environment=PYTHONUNBUFFERED=1
-    
+
           [Install]
           WantedBy=multi-user.target
       notify: Reload systemd daemon
@@ -244,7 +244,7 @@
         name: tempmail.service
         enabled: true
         state: started
-        
+
     - name: Enable apache
       systemd:
         name: apache2
@@ -256,12 +256,11 @@
         dest: /etc/postfix/virtual
         content: |
           /.+@inboxcl\.xyz/ mailtrash
-          /.+@olifani\.eu/ mailtrash
         owner: root
         group: root
         mode: '0644'
-      notify: Restart Postfix 
-      
+      notify: Restart Postfix
+
     - name: Setze 'mydestination' in main.cf korrekt
       lineinfile:
         path: /etc/postfix/main.cf
@@ -270,7 +269,7 @@
         state: present
         create: yes
       notify: Restart Postfix
-  
+
     - name: Setze 'virtual_alias_maps' in main.cf korrekt
       lineinfile:
         path: /etc/postfix/main.cf
@@ -279,13 +278,13 @@
         state: present
         create: yes
       notify: Restart Postfix
-  
+
     - name: Stelle sicher, dass Postfix aktiviert und gestartet ist
       systemd:
         name: postfix
         enabled: true
-        state: started        
-          
+        state: started
+
     - name: Stelle sicher, dass der Alias 'mailtrash' korrekt in /etc/aliases gesetzt ist
       lineinfile:
         path: /etc/aliases
@@ -313,8 +312,7 @@
           Defaults:nobody !requiretty
           nobody ALL=(www-data) NOPASSWD: /usr/bin/python3 /var/www/tempmail/backend/receive_mail.py
         validate: '/usr/sbin/visudo -cf %s'
-    
-          
+
   handlers:
 
     - name: Reload systemd daemon
