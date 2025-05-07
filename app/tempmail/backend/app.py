@@ -11,7 +11,7 @@ app.secret_key = 'super-secret-key'
 socketio = SocketIO(app)
 
 EMAIL_DIR = "/var/tempmail/mails"
-TIMER_DURATION = 300  # 2 Minuten in Sekunden
+TIMER_DURATION = 300
 ALIAS_LIFETIME = timedelta(minutes=5)
 TARGET_USER = "www-data"
 STATS_FILE = "/var/tempmail/misc/stats.json"
