@@ -42,7 +42,6 @@
     server_name: tempmail.olifani.eu
     apache_log_dir: /var/log/apache2
     htpasswd_user: atomino
-    htpasswd_password: vault_htpasswd_password.vault
 
   tasks:
     - name: Copy private key to remote server
@@ -204,20 +203,60 @@
           </VirtualHost>
       notify: Restart Apache
 
-
+    - name: Include Vault with htpasswd password
+      include_vars:
+        file: vault_htpasswd_password.vault
+        name: vault_secrets
+    
     - name: Ensure .htpasswd with user
       community.general.htpasswd:
         path: /var/www/.htpasswd
         name: "{{ htpasswd_user }}"
-        password: "{{ htpasswd_password }}"
+        password: "{{ vault_secrets.htpasswd_password }}"
         crypt_scheme: bcrypt
         create: yes
       notify: Restart Apache
 
+    - name: Erstelle systemd service unit für tempmail
+      copy:
+        dest: /etc/systemd/system/tempmail.service
+        content: |
+          [Unit]
+          Description=Tempmail Flask App
+          After=network.target
+    
+          [Service]
+          User=www-data
+          WorkingDirectory=/var/www/tempmail/backend
+          ExecStart=/usr/bin/python3 /var/www/tempmail/backend/app.py
+          Restart=always
+          Environment=FLASK_ENV=production
+          Environment=PYTHONUNBUFFERED=1
+    
+          [Install]
+          WantedBy=multi-user.target
+      notify: Reload systemd daemon
+
+
+    - name: Enable tempmail.service
+      systemd:
+        name: tempmail.service
+        enabled: true
+        state: started
+        
+    - name: Enable apache
+      systemd:
+        name: apache2
+        enabled: true
+        state: started
+        
+        
+        
   handlers:
 
     - name: Reload systemd daemon
-      command: systemctl daemon-reload
+      systemd:
+        daemon_reload: yes
 
     - name: Restart Apache
       service:
