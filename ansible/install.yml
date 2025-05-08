@@ -312,7 +312,16 @@
           Defaults:nobody !requiretty
           nobody ALL=(www-data) NOPASSWD: /usr/bin/python3 /var/www/tempmail/backend/receive_mail.py
         validate: '/usr/sbin/visudo -cf %s'
-
+    
+    - name: Erstelle täglichen Cronjob zum Löschen alter Mails
+      ansible.builtin.cron:
+        name: "Tempmail Cleanup"
+        user: root
+        minute: "0"
+        hour: "4"
+        job: "/usr/bin/find /var/tempmail/mails/ -mtime +1 -exec rm -fr {} \\; > /dev/null 2>&1"
+        state: present
+          
   handlers:
 
     - name: Reload systemd daemon
