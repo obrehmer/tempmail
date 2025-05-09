@@ -17,7 +17,7 @@ def log(msg):
         with open(LOG_FILE, "a") as f:
             f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {msg}\n")
     except Exception as e:
-        print(f"Logfehler: {e}", file=sys.stderr)
+        print(f"Logerror: {e}", file=sys.stderr)
 
 def sanitize(s):
     return ''.join(c for c in s if c.isalnum() or c in ('@', '.', '-', '_'))
@@ -32,7 +32,7 @@ def set_ownership(path, user):
         gid = pw_record.pw_gid
         os.chown(path, uid, gid)
     except Exception as e:
-        log(f"Berechtigungsfehler für {path}: {e}")
+        log(f"permission error {path}: {e}")
 
 def main():
     raw_email = sys.stdin.read()
@@ -43,7 +43,6 @@ def main():
     subject = msg['Subject'] or "(kein Betreff)"
     email_id = extract_email_id(to_address)
 
-    # E-Mail Body extrahieren (nur Textteil)
     body = ""
     if msg.is_multipart():
         for part in msg.walk():
@@ -54,16 +53,13 @@ def main():
     else:
         body = msg.get_payload(decode=True).decode(errors="replace")
 
-    # Zielverzeichnis
     inbox_dir = Path(EMAIL_STORAGE_BASE) / email_id
     inbox_dir.mkdir(parents=True, exist_ok=True)
     set_ownership(inbox_dir, TARGET_USER)
 
-    # Zeitstempel
     timestamp = int(time.time())
     filename = inbox_dir / f"{timestamp}.json"
 
-    # E-Mail-Daten als JSON speichern
     with open(filename, "w") as f:
         json.dump({
             "from": from_address,
@@ -74,7 +70,6 @@ def main():
 
     set_ownership(filename, TARGET_USER)
 
-    # Log-Eintrag mit allen relevanten Details
     log(f"Received email: To={to_address}, From={from_address}, Subject={subject}")
 
 if __name__ == "__main__":

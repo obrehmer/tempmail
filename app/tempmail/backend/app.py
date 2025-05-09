@@ -26,7 +26,7 @@ def ensure_stats_file():
             pw_record = pwd.getpwnam(TARGET_USER)
             os.chown(STATS_FILE, pw_record.pw_uid, pw_record.pw_gid)
     except Exception as e:
-        print(f"Fehler beim Erstellen von stats.json: {e}")
+        print(f"error while creating stats.json: {e}")
 
 def generate_email():
     return ''.join(random.choices(string.ascii_lowercase, k=5))
@@ -176,4 +176,3 @@ def internal_error(error):
 if __name__ == '__main__':
     ensure_stats_file()
     socketio.run(app, host='0.0.0.0', port=5000, debug=False)
-
