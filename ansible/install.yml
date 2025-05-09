@@ -1,7 +1,9 @@
 ---
-- hosts: all
-  name: install tempmailserver
+- name: Install temporary mail server
+  hosts: all
   become: yes
+  gather_facts: false
+
   vars:
     web: 80
     ssh_port: 22
@@ -45,42 +47,42 @@
     postfix_virtual_alias_maps: "regexp:/etc/postfix/virtual"
 
   tasks:
+
+    # System Preparation
     - name: Copy private key to remote server
       copy:
         src: "{{ key_file }}"
         dest: /root/.ssh/authorized_keys
-        mode: 0600
+        mode: '0600'
 
-    - name: set timezone
+    - name: Set timezone
       timezone:
         name: Europe/Oslo
 
-    - name: change term env
+    - name: Set TERM environment variable
       copy:
         dest: /etc/profile.d/terminal.sh
         content: |
           TERM=xterm
           export TERM
 
-    - name: apt update
+    - name: Update and upgrade apt packages
       apt:
         upgrade: yes
         update_cache: yes
         cache_valid_time: 86400
 
-    - name: install pkgs
+    - name: Install required packages
       apt:
         name: "{{ packages }}"
         state: present
 
-    - name: set allowed ports based on api
+    # Firewall Configuration
+    - name: Define allowed ports
       set_fact:
-        allowed_ports: >-
-          {{
-            [ssh_port] + [smtp]
-          }}
+        allowed_ports: "{{ [ssh_port, smtp] }}"
 
-    - name: set iptables rules
+    - name: Configure iptables rules for allowed ports
       iptables:
         chain: INPUT
         protocol: tcp
@@ -91,7 +93,7 @@
         comment: Allow incoming traffic on specified ports only
       loop: "{{ allowed_ports }}"
 
-    - name: allow web only from Cloudflare IP ranges
+    - name: Allow HTTP traffic only from Cloudflare IP ranges
       iptables:
         chain: INPUT
         protocol: tcp
@@ -103,7 +105,7 @@
         comment: Allow HTTP (port 80) from Cloudflare only
       loop: "{{ cloudflare_sources }}"
 
-    - name: disable sending emails
+    - name: Block outgoing SMTP traffic
       iptables:
         chain: OUTPUT
         protocol: tcp
@@ -113,7 +115,7 @@
         rule_num: 1
         comment: Prevent sending emails
 
-    - name: set iptables rules
+    - name: Allow incoming traffic from localhost
       iptables:
         chain: INPUT
         protocol: all
@@ -122,14 +124,13 @@
         action: insert
         comment: Allow incoming traffic from localhost
 
-
-    - name: Allow related and established connections
+    - name: Allow established and related connections
       iptables:
         chain: INPUT
         ctstate: ESTABLISHED,RELATED
         jump: ACCEPT
 
-    - name: Drop all other incoming connections
+    - name: Set default policy to drop all other incoming connections
       iptables:
         chain: INPUT
         policy: DROP
@@ -137,32 +138,33 @@
     - name: Save iptables rules (IPv4)
       shell: iptables-save > /etc/iptables/rules.v4
 
-    - name: create dir for email data
+    # Directory Setup
+    - name: Create directory for email data (mails)
       file:
         path: /var/tempmail/mails
         state: directory
         owner: www-data
         group: www-data
-        mode: 0750
+        mode: '0750'
 
-    - name: create dir for email data
+    - name: Create directory for email data (misc)
       file:
         path: /var/tempmail/misc
         state: directory
         owner: www-data
         group: www-data
-        mode: 0750
+        mode: '0750'
 
-    - name: create dir for email data
+    - name: Create directory for web application
       file:
         path: /var/www/tempmail
         state: directory
         recurse: yes
         owner: www-data
         group: www-data
-        mode: 0750
+        mode: '0750'
 
-    - name: Create empty stats.json if not exists
+    - name: Create empty stats.json if it does not exist
       copy:
         dest: /var/tempmail/misc/stats.json
         content: "{}\n"
@@ -171,13 +173,13 @@
         mode: '0644'
         force: no
 
-    - name: Write Apache VirtualHost config for tempmail
+    # Apache Configuration
+    - name: Write Apache VirtualHost configuration for tempmail
       copy:
         dest: /etc/apache2/sites-available/tempmail.conf
         content: |
           <VirtualHost *:80>
               ServerName {{ server_name }}
-
 
               ErrorLog {{ apache_log_dir }}/tempmail_error.log
               CustomLog {{ apache_log_dir }}/tempmail_access.log combined
@@ -218,7 +220,14 @@
         create: yes
       notify: Restart Apache
 
-    - name: Erstelle systemd service unit für tempmail
+    - name: Enable Apache
+      systemd:
+        name: apache2
+        enabled: true
+        state: started
+
+    # Systemd Service for Flask App
+    - name: Create systemd service unit for tempmail
       copy:
         dest: /etc/systemd/system/tempmail.service
         content: |
@@ -238,20 +247,14 @@
           WantedBy=multi-user.target
       notify: Reload systemd daemon
 
-
     - name: Enable tempmail.service
       systemd:
         name: tempmail.service
         enabled: true
         state: started
 
-    - name: Enable apache
-      systemd:
-        name: apache2
-        enabled: true
-        state: started
-
-    - name: Setze Alias-Regeln in /etc/postfix/virtual
+    # Postfix Configuration
+    - name: Set alias rules in /etc/postfix/virtual
       copy:
         dest: /etc/postfix/virtual
         content: |
@@ -261,7 +264,7 @@
         mode: '0644'
       notify: Restart Postfix
 
-    - name: Setze 'mydestination' in main.cf korrekt
+    - name: Set 'mydestination' in main.cf correctly
       lineinfile:
         path: /etc/postfix/main.cf
         regexp: '^mydestination\s*='
@@ -270,7 +273,7 @@
         create: yes
       notify: Restart Postfix
 
-    - name: Setze 'virtual_alias_maps' in main.cf korrekt
+    - name: Set 'virtual_alias_maps' in main.cf correctly
       lineinfile:
         path: /etc/postfix/main.cf
         regexp: '^virtual_alias_maps\s*='
@@ -279,29 +282,29 @@
         create: yes
       notify: Restart Postfix
 
-    - name: Stelle sicher, dass Postfix aktiviert und gestartet ist
+    - name: Ensure Postfix is enabled and started
       systemd:
         name: postfix
         enabled: true
         state: started
 
-    - name: Stelle sicher, dass der Alias 'mailtrash' korrekt in /etc/aliases gesetzt ist
+    - name: Ensure alias 'mailtrash' is correctly set in /etc/aliases
       lineinfile:
         path: /etc/aliases
         regexp: '^mailtrash:'
         line: 'mailtrash: "|sudo -u www-data /usr/bin/python3 /var/www/tempmail/backend/receive_mail.py"'
         state: present
         create: yes
-      notify: Aktualisiere Aliases und starte Postfix neu
+      notify: Update aliases and restart Postfix
 
-    - name: Erstelle den Benutzer 'mailtrash' ohne Login-Shell
+    - name: Create user 'mailtrash' without login shell
       user:
         name: mailtrash
         shell: /usr/sbin/nologin
         create_home: yes
         state: present
 
-    - name: Konfiguriere sudo-Rechte für 'nobody'
+    - name: Configure sudo rights for 'nobody'
       blockinfile:
         path: /etc/sudoers.d/nobody_mailtrash
         create: yes
@@ -313,7 +316,7 @@
           nobody ALL=(www-data) NOPASSWD: /usr/bin/python3 /var/www/tempmail/backend/receive_mail.py
         validate: '/usr/sbin/visudo -cf %s'
     
-    - name: Erstelle täglichen Cronjob zum Löschen alter Mails
+    - name: create cronjob to cleanupold mails
       ansible.builtin.cron:
         name: "Tempmail Cleanup"
         user: root
@@ -321,7 +324,8 @@
         hour: "4"
         job: "/usr/bin/find /var/tempmail/mails/ -mtime +1 -exec rm -fr {} \\; > /dev/null 2>&1"
         state: present
-          
+ 
+
   handlers:
 
     - name: Reload systemd daemon
@@ -346,4 +350,3 @@
       shell: |
         newaliases
         systemctl restart postfix
-      become: yes
