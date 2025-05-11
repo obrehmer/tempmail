@@ -1,0 +1,2 @@
+ansible/authorized_keys.vault
+ansible/vault_htpasswd_password.vault
