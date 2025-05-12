@@ -274,6 +274,16 @@
         mode: '0644'
       notify: Restart Postfix
 
+    - name: Create /etc/postfix/reject_recipients if not exist
+      file:
+        dest: /etc/postfix/reject_recipients
+        owner: root
+        group: root
+        mode: '0644'
+        force: no
+      notify: postmap rejects
+
+
     - name: Set 'mydestination' in main.cf correctly
       lineinfile:
         path: /etc/postfix/main.cf
@@ -375,6 +385,10 @@
 
     - name: Postmap virtual
       command: postmap /etc/postfix/virtual
+      notify: Restart Postfix
+
+    - name: postmap rejects
+      command: postmap /etc/postfix/reject_recipients
       notify: Restart Postfix
 
     - name: Aktualisiere Aliases und starte Postfix neu
