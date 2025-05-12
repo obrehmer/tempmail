@@ -313,6 +313,52 @@
       notify: Restart Postfix
 
 
+    - name: Ensure secure Postfix options are set in main.cf
+      lineinfile:
+        path: /etc/postfix/main.cf
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        create: yes
+        state: present
+        backrefs: yes
+      with_items:
+        - { regexp: '^mynetworks\s*=.*', line: 'mynetworks = 127.0.0.0/8' }
+        - { regexp: '^home_mailbox\s*=.*', line: 'home_mailbox =' }
+        - { regexp: '^local_transport\s*=.*', line: 'local_transport = error:local delivery disabled' }
+        - { regexp: '^default_process_limit\s*=.*', line: 'default_process_limit = 50' }
+        - { regexp: '^message_size_limit\s*=.*', line: 'message_size_limit = 10240000' }
+        - { regexp: '^smtpd_helo_required\s*=.*', line: 'smtpd_helo_required = yes' }
+        - { regexp: '^disable_vrfy_command\s*=.*', line: 'disable_vrfy_command = yes' }
+      notify: Restart Postfix
+      become: true
+
+    - name: Ensure smtpd_helo_restrictions are defined in main.cf
+      blockinfile:
+        path: /etc/postfix/main.cf
+        marker: "# {mark} ANSIBLE MANAGED BLOCK smtpd_helo_restrictions"
+        block: |
+          smtpd_helo_restrictions =
+              reject_invalid_helo_hostname,
+              reject_non_fqdn_helo_hostname,
+              reject_unknown_helo_hostname
+      notify: Restart Postfix
+      become: true
+
+    - name: Ensure secure SMTP service block is present in master.cf
+      blockinfile:
+        path: /etc/postfix/master.cf
+        marker: "# {mark} ANSIBLE MANAGED BLOCK: secure SMTP service"
+        insertafter: "^smtp\\s+inet"
+        block: |
+          smtp      inet  n       -       y       -       -       smtpd
+            -o smtpd_client_connection_count_limit=10
+            -o smtpd_client_connection_rate_limit=30
+            -o smtpd_error_sleep_time=1s
+      notify: Restart Postfix
+      become: true
+    
+
+
     - name: Ensure Postfix is enabled and started
       systemd:
         name: postfix

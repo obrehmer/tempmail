@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TempMail - Eingehende E-Mails</title>
+</head>
+<body>
+	<p>Deine temporäre E-Mail: <strong>{{ email }}@olifani.eu</strong></p>
+<ul>
+  {% for mail in emails %}
+    <li><strong>{{ mail.subject }}</strong> von {{ mail.from }}<br>{{ mail.body }}</li>
+  {% else %}
+    <li>Keine Nachrichten</li>
+  {% endfor %}
+</ul>
+
+</body>
+</html>
+
