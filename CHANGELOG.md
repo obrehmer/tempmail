@@ -31,8 +31,6 @@
 - Requires Postfix to be configured with reject_recipients, added to ansible install.yaml
 - Requieres a cronjob to refresh the reject_recipients, also added to ansible install.yaml
 
-# Changelog
-
 ## [v1.1.1] - 2025-05-12
 ### Changed
 - **Postfix `main.cf`**:
