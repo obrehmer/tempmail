@@ -173,6 +173,16 @@
         mode: '0644'
         force: no
 
+    - name: Create empty active_aliases.json if it does not exist
+      copy:
+        dest: /var/tempmail/misc/active_aliases.json
+        content: "{}\n"
+        owner: www-data
+        group: www-data
+        mode: '0644'
+        force: no
+
+
     # Apache Configuration
     - name: Write Apache VirtualHost configuration for tempmail
       copy:
@@ -281,6 +291,17 @@
         state: present
         create: yes
       notify: Restart Postfix
+
+    - name: Set 'smtpd_recipient_restrictions' in main.cf correctly
+      lineinfile:
+        path: /etc/postfix/main.cf
+        regexp: '^smtpd_recipient_restrictions\s*='
+        line: "smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination, check_recipient_access hash:/etc/postfix/reject_recipients,
+ permit"
+        state: present
+        create: yes
+      notify: Restart Postfix
+
 
     - name: Ensure Postfix is enabled and started
       systemd:

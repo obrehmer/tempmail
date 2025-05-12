@@ -15,6 +15,31 @@ TIMER_DURATION = 300
 ALIAS_LIFETIME = timedelta(minutes=5)
 TARGET_USER = "www-data"
 STATS_FILE = "/var/tempmail/misc/stats.json"
+ACTIVE_ALIASES_FILE = "/var/tempmail/misc/active_aliases.json"
+
+def add_active_alias(email_id):
+    try:
+        with open(ACTIVE_ALIASES_FILE, "r") as f:
+            active_aliases = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        active_aliases = {}
+
+    active_aliases[email_id] = datetime.utcnow().isoformat()
+
+    with open(ACTIVE_ALIASES_FILE, "w") as f:
+        json.dump(active_aliases, f)
+
+def add_active_alias(email_id):
+    try:
+        with open(ACTIVE_ALIASES_FILE, "r") as f:
+            active_aliases = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        active_aliases = {}
+
+    active_aliases[email_id] = datetime.utcnow().isoformat()
+
+    with open(ACTIVE_ALIASES_FILE, "w") as f:
+        json.dump(active_aliases, f)
 
 def ensure_stats_file():
     initial_data = {}
@@ -106,6 +131,7 @@ def index():
         session['email_created_at'] = time.time()
         log_address_creation()
         create_welcome_email(session['email_id'])
+        add_active_alias(session['email_id'])
 
     email_id = session['email_id']
     inbox_dir = os.path.join(EMAIL_DIR, email_id)
