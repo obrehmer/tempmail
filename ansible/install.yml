@@ -345,7 +345,17 @@
         hour: "4"
         job: "/usr/bin/find /var/tempmail/mails/ -mtime +1 -exec rm -fr {} \\; > /dev/null 2>&1"
         state: present
- 
+
+    - name: create cronjob to update reject mails list
+      ansible.builtin.cron:
+        name: "Rejectmail update"
+        user: root
+        minute: "*"
+        hour: "*"
+        job: "/usr/bin/python3 /var/www/tempmail/backend/update_rejects.py > /dev/null 2>&1"
+        state: present
+
+
 
   handlers:
 
