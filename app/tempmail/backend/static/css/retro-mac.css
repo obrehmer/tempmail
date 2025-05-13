@@ -209,3 +209,18 @@ input[type="text"]:focus {
   }
 }
 
+.copy-button {
+  background-color: #e0e0e0;
+  border: 2px solid #888;
+  padding: 8px 14px;
+  font-family: monospace;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+}
+
+.copy-button:hover {
+  background-color: #cfcfcf;
+}
+

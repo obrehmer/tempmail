@@ -55,6 +55,11 @@
       <p>This email address is only valid for 5 minutes. Remaining time: <span id="countdown-timer"></span></p>
     {% endif %}
 
+    <!-- DISPLAY EMAIL -->
+    <div class="email-display" id="email-address">{{ email }}</div>
+    <button class="copy-button spaced-bottom" onclick="copyEmail()">📋 Copy</button>
+    
+    
     <!-- REFRESH BUTTON -->
     <button class="spaced-bottom" onclick="location.reload()">🔄 Refresh inbox</button>
 
@@ -77,6 +82,20 @@
     window.remainingTime = {{ session['remaining_time'] | default(0) }};
   </script>
   <script src="/static/js/timer.js"></script>
+
+  <script>
+    window.remainingTime = {{ session['remaining_time'] | default(0) }};
+  
+    function copyEmail() {
+      const emailText = document.getElementById('email-address').innerText;
+      navigator.clipboard.writeText(emailText).then(() => {
+        const btn = document.querySelector('.copy-button');
+        btn.innerText = '✅ Copied';
+        setTimeout(() => btn.innerText = '📋 Copy', 1500);
+      });
+    }
+  </script>
+  
 </body>
 </html>
 
