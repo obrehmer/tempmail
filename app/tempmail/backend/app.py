@@ -178,7 +178,7 @@ def robots():
     return send_from_directory('static/meta', 'robots.txt')
 
 @app.route('/ads.txt')
-def robots():
+def ads():
     return send_from_directory('static/meta', 'ads.txt')
 
 @app.route('/why-temp-email.html')
