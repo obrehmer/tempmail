@@ -15,7 +15,6 @@
 - 🧹 Cron job for daily cleanup of expired email files.
 
 ## [v1.1.0] - 2025-05-12
-
 ### Added
 - 🛡️ Temporary email aliases are now automatically blocked in Postfix after expiration (5 minutes).
 - 📦 Introduced `expired_aliases.json` to persist and track expired aliases.
@@ -47,3 +46,7 @@
 - Improved mail server security through stricter client limits and dynamic email alias blocking.
 
 
+## [v1.2.0] - 2025-05-13
+### Added
+- Added ads.txt and route in app.py
+- ads.txt is necessary for registration with Google Adsense 
