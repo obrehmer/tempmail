@@ -49,17 +49,13 @@
 
     <!-- DISPLAY EMAIL -->
     <div class="email-display">{{ email }}</div>
+    <button class="copy-button spaced-bottom" onclick="copyEmail()">📋 Copy</button>
     {% if remaining_minutes <= 0 and remaining_seconds <= 0 %}
       <strong>The email address has expired. A new one has been created.</strong>
     {% else %}
       <p>This email address is only valid for 5 minutes. Remaining time: <span id="countdown-timer"></span></p>
     {% endif %}
 
-    <!-- DISPLAY EMAIL -->
-    <div class="email-display" id="email-address">{{ email }}</div>
-    <button class="copy-button spaced-bottom" onclick="copyEmail()">📋 Copy</button>
-    
-    
     <!-- REFRESH BUTTON -->
     <button class="spaced-bottom" onclick="location.reload()">🔄 Refresh inbox</button>
 
