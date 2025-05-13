@@ -177,6 +177,10 @@ def sitemap():
 def robots():
     return send_from_directory('static/meta', 'robots.txt')
 
+@app.route('/ads.txt')
+def robots():
+    return send_from_directory('static/meta', 'ads.txt')
+
 @app.route('/why-temp-email.html')
 def why_temp_email():
     return render_template('why-temp-email.html')
