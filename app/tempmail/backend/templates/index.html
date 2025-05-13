@@ -49,7 +49,7 @@
 
     <!-- DISPLAY EMAIL -->
     <div id="email-address" class="email-display">{{ email }}</div>
-    <button class="copy-button spaced-bottom" onclick="copyEmail()">📋 Copy</button>
+    <button class="copy-button spaced-bottom" onclick="copyEmail()">Copy</button>
     {% if remaining_minutes <= 0 and remaining_seconds <= 0 %}
       <strong>The email address has expired. A new one has been created.</strong>
     {% else %}
