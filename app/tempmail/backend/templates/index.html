@@ -76,12 +76,6 @@
 
   <script>
     window.remainingTime = {{ session['remaining_time'] | default(0) }};
-  </script>
-  <script src="/static/js/timer.js"></script>
-
-  <script>
-    window.remainingTime = {{ session['remaining_time'] | default(0) }};
-  
     function copyEmail() {
       const emailText = document.getElementById('email-address').innerText;
       navigator.clipboard.writeText(emailText).then(() => {
@@ -90,8 +84,10 @@
         setTimeout(() => btn.innerText = '📋 Copy', 1500);
       });
     }
+
   </script>
-  
+  <script src="/static/js/timer.js"></script>
+
 </body>
 </html>
 
