@@ -50,3 +50,16 @@
 ### Added
 - Added ads.txt and route in app.py
 - ads.txt is necessary for registration with Google Adsense 
+
+## [v1.3.0] - 2025-05-13
+
+### Added
+- ✨ New "Copy to Clipboard" feature for temporary email addresses.
+  - A "📋 Copy" button was added below the displayed email.
+  - Clicking the button copies the email address to the clipboard.
+  - A success indicator (✅ Copied) briefly replaces the button label after clicking.
+  - Fully styled to match the existing retro-mac theme.
+
+### Changed
+- Minor adjustments in HTML to support the feature, including assigning a proper ID to the email display element.
+
