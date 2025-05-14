@@ -41,7 +41,6 @@
       - 172.64.0.0/13
       - 131.0.72.0/22
     server_name: tempmail.olifani.eu
-    apache_log_dir: /var/log/apache2
     htpasswd_user: atomino
     postfix_virtual_alias_domains: "inboxcl.xyz"
     postfix_virtual_alias_maps: "regexp:/etc/postfix/virtual"
@@ -191,8 +190,8 @@
           <VirtualHost *:80>
               ServerName {{ server_name }}
 
-              ErrorLog {{ apache_log_dir }}/tempmail_error.log
-              CustomLog {{ apache_log_dir }}/tempmail_access.log combined
+              ErrorLog /dev/null
+              CustomLog /dev/null combined
 
               RewriteEngine on
               RewriteCond %{REQUEST_URI} ^/$
@@ -216,6 +215,26 @@
           </VirtualHost>
       notify: Restart Apache
 
+    - name: Set Apache ErrorLog to /dev/null
+      lineinfile:
+        path: /etc/apache2/sites-available/000-default.conf
+        regexp: '^\s*ErrorLog\s+'
+        line: '    ErrorLog /dev/null'
+        insertafter: '^<VirtualHost.*>'
+        state: present
+      notify: Reload apache
+    
+    - name: Set Apache CustomLog to /dev/null
+      lineinfile:
+        path: /etc/apache2/sites-available/000-default.conf
+        regexp: '^\s*CustomLog\s+'
+        line: '    CustomLog /dev/null combined'
+        insertafter: '^<VirtualHost.*>'
+        state: present
+      notify: Reload apache
+    
+   
+    
     - name: Include Vault with htpasswd password
       include_vars:
         file: vault_htpasswd_password.vault
@@ -459,6 +478,11 @@
         name: apache2
         state: restarted
 
+    - name: Reload apache
+      service:
+        name: apache2
+        state: reloaded
+ 
     - name: Restart Postfix
       systemd:
         name: postfix
