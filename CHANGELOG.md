@@ -63,3 +63,18 @@
 ### Changed
 - Minor adjustments in HTML to support the feature, including assigning a proper ID to the email display element.
 
+## [v1.3.1] - 2025-05-14
+### Added
+- Ansible role/tasks to enable anonymous Postfix logging.
+- Suppresses logging of sender, recipient, and full mail details.
+- Configures `header_checks` to discard headers from being logged.
+- Optional integration with `rsyslog` to mute Postfix log entries completely.
+
+### Changed
+- Postfix configuration updated for enhanced privacy.
+- `install.yaml` updated to include new logging configuration steps.
+
+### Notes
+- This change is intended for privacy-focused deployments (e.g. disposable or anonymous email services).
+- See [GitHub Repo](https://github.com/obrehmer/tempmail) for implementation details.
+
