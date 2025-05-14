@@ -330,7 +330,6 @@
         - { regexp: '^smtpd_helo_required\s*=.*', line: 'smtpd_helo_required = yes' }
         - { regexp: '^disable_vrfy_command\s*=.*', line: 'disable_vrfy_command = yes' }
       notify: Restart Postfix
-      become: true
 
     - name: Ensure smtpd_helo_restrictions are defined in main.cf
       blockinfile:
@@ -342,7 +341,6 @@
               reject_non_fqdn_helo_hostname,
               reject_unknown_helo_hostname
       notify: Restart Postfix
-      become: true
 
     - name: Ensure secure SMTP service block is present in master.cf
       blockinfile:
@@ -355,8 +353,46 @@
             -o smtpd_client_connection_rate_limit=30
             -o smtpd_error_sleep_time=1s
       notify: Restart Postfix
-      become: true
     
+    - name: Set anonymous Postfix logging options in main.cf
+      lineinfile:
+        path: /etc/postfix/main.cf
+        regexp: "^{{ item.option }} ="
+        line: "{{ item.option }} = {{ item.value }}"
+        create: yes
+      loop:
+        - { option: 'smtpd_tls_loglevel', value: '0' }
+        - { option: 'smtp_tls_loglevel', value: '0' }
+        - { option: 'debug_peer_level', value: '1' }
+        - { option: 'disable_vrfy_command', value: 'yes' }
+        - { option: 'header_checks', value: 'regexp:/etc/postfix/empty.cf' }
+        - { option: 'smtpd_recipient_restrictions', value: 'permit_mynetworks, reject_unauth_destination' }
+
+      notify: Restart Postfix
+
+    - name: Create empty header_checks file
+      copy:
+        content: ''
+        dest: /etc/postfix/empty.cf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart Postfix
+
+    - name: Create postmap database for empty.cf
+      command: postmap /etc/postfix/empty.cf
+      args:
+        creates: /etc/postfix/empty.cf.db
+      notify: Restart Postfix
+
+
+    # Optional: completely suppress Postfix logs via rsyslog
+    - name: Disable Postfix logging in rsyslog (optional)
+      copy:
+        dest: /etc/rsyslog.d/30-postfix-anon.conf
+        content: |
+          if ($programname == 'postfix') then stop
+      notify: Restart rsyslog
 
 
     - name: Ensure Postfix is enabled and started
@@ -441,3 +477,10 @@
       shell: |
         newaliases
         systemctl restart postfix
+
+    - name: Restart rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+
+
