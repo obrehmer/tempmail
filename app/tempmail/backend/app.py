@@ -29,18 +29,6 @@ def add_active_alias(email_id):
     with open(ACTIVE_ALIASES_FILE, "w") as f:
         json.dump(active_aliases, f)
 
-def add_active_alias(email_id):
-    try:
-        with open(ACTIVE_ALIASES_FILE, "r") as f:
-            active_aliases = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        active_aliases = {}
-
-    active_aliases[email_id] = datetime.utcnow().isoformat()
-
-    with open(ACTIVE_ALIASES_FILE, "w") as f:
-        json.dump(active_aliases, f)
-
 def ensure_stats_file():
     initial_data = {}
     try:
@@ -105,33 +93,28 @@ def log_address_creation():
     with open(STATS_FILE, "w") as f:
         json.dump(stats, f)
 
-@app.route('/email/<email_id>/<filename>')
-def view_email(email_id, filename):
-    inbox_dir = os.path.join(EMAIL_DIR, email_id)
-    file_path = os.path.join(inbox_dir, filename)
+def reset_email_session():
+    if 'email_id' in session:
+        inbox_dir = os.path.join(EMAIL_DIR, session['email_id'])
+        if os.path.exists(inbox_dir):
+            for fname in os.listdir(inbox_dir):
+                os.remove(os.path.join(inbox_dir, fname))
+    session.clear()
+    session['email_id'] = generate_email()
+    session['email_created_at'] = time.time()
+    log_address_creation()
+    create_welcome_email(session['email_id'])
+    add_active_alias(session['email_id'])
 
-    if not os.path.exists(file_path):
-        abort(404)
-
-    with open(file_path) as f:
-        mail = json.load(f)
-
-    return render_template('email_view.html', mail=mail)
+@app.route('/new-alias')
+def new_alias():
+    reset_email_session()
+    return redirect(url_for('index'))
 
 @app.route('/index.html')
 def index():
     if 'email_id' not in session or check_alias_expiration():
-        if 'email_id' in session:
-            inbox_dir = os.path.join(EMAIL_DIR, session['email_id'])
-            if os.path.exists(inbox_dir):
-                for fname in os.listdir(inbox_dir):
-                    os.remove(os.path.join(inbox_dir, fname))
-        session.clear()
-        session['email_id'] = generate_email()
-        session['email_created_at'] = time.time()
-        log_address_creation()
-        create_welcome_email(session['email_id'])
-        add_active_alias(session['email_id'])
+        reset_email_session()
 
     email_id = session['email_id']
     inbox_dir = os.path.join(EMAIL_DIR, email_id)
@@ -160,6 +143,19 @@ def index():
                            email_id=email_id,
                            remaining_minutes=remaining_minutes,
                            remaining_seconds=remaining_seconds)
+
+@app.route('/email/<email_id>/<filename>')
+def view_email(email_id, filename):
+    inbox_dir = os.path.join(EMAIL_DIR, email_id)
+    file_path = os.path.join(inbox_dir, filename)
+
+    if not os.path.exists(file_path):
+        abort(404)
+
+    with open(file_path) as f:
+        mail = json.load(f)
+
+    return render_template('email_view.html', mail=mail)
 
 @app.route('/delete_emails/<email_id>')
 def delete_emails(email_id):
@@ -206,3 +202,4 @@ def internal_error(error):
 if __name__ == '__main__':
     ensure_stats_file()
     socketio.run(app, host='0.0.0.0', port=5000, debug=False)
+
