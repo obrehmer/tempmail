@@ -366,7 +366,6 @@
         - { option: 'debug_peer_level', value: '1' }
         - { option: 'disable_vrfy_command', value: 'yes' }
         - { option: 'header_checks', value: 'regexp:/etc/postfix/empty.cf' }
-        - { option: 'smtpd_recipient_restrictions', value: 'permit_mynetworks, reject_unauth_destination' }
 
       notify: Restart Postfix
 
