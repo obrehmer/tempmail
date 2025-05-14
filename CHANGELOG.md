@@ -78,3 +78,18 @@
 - This change is intended for privacy-focused deployments (e.g. disposable or anonymous email services).
 - See [GitHub Repo](https://github.com/obrehmer/tempmail) for implementation details.
 
+## [v1.4.0] - 2025-05-14
+
+### Added
+- Ansible tasks to fully anonymize logging for Apache and Postfix.
+- New configuration to redirect Apache `access.log` and `error.log` to `/dev/null`.
+- Postfix logging stripped of sender, recipient, and message details for privacy.
+
+### Changed
+- Default behavior of logging now aligns with strict data minimization principles.
+- Apache and Postfix configurations are now automatically managed via Ansible.
+
+### Notes
+- This update is especially useful for privacy-focused or temporary services (e.g., tempmail).
+- Make sure to reload Apache and Postfix after applying the new configuration.
+
