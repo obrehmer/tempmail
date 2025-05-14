@@ -10,7 +10,7 @@ import grp
 
 EMAIL_STORAGE_BASE = "/var/tempmail/mails"
 TARGET_USER = "www-data"
-LOG_FILE = "/var/log/receive_mail.log"
+LOG_FILE = "/dev/null"
 
 def log(msg):
     try:
