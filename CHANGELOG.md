@@ -93,3 +93,17 @@
 - This update is especially useful for privacy-focused or temporary services (e.g., tempmail).
 - Make sure to reload Apache and Postfix after applying the new configuration.
 
+## [v1.5.0] - 2025-05-14
+
+### Added
+- "Reload" button on index page to generate a new temporary email address manually
+- Previous alias is now immediately invalidated and treated as expired
+- Expired aliases are written to `/etc/postfix/reject_recipients` to prevent future use
+- Automatic Postfix reload after updating rejected recipients
+
+### Changed
+- Alias lifetime resets on manual reload
+
+### Security
+- Improved alias handling and mail filtering by blacklisting expired aliases
+
