@@ -1,5 +1,7 @@
 # TempMail – Disposable Email Address Service
 
+👉 **Check it out at [https://tempmail.olifani.eu/](https://tempmail.olifani.eu/)!**
+
 TempMail is a disposable, temporary email inbox service for spam protection and anonymous sign-ups. This setup is fully automated via Ansible and deploys the application on an Ubuntu 24 server.
 
 ---
