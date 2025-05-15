@@ -2,29 +2,46 @@
 
 👉 **Check it out at [https://tempmail.olifani.eu/](https://tempmail.olifani.eu/)!**
 
-TempMail is a disposable, temporary email inbox service for spam protection and anonymous sign-ups. This setup is fully automated via Ansible and deploys the application on an Ubuntu 24 server.
+TempMail is a disposable, temporary email inbox service designed for spam protection and anonymous sign-ups. The entire setup is fully automated using Ansible and deploys the application on an Ubuntu 24 server.
 
 ---
 
 ## Features
 
-- Temporary email addresses valid for 5 minutes
-- No outgoing mail (receive only)
-- WebSocket updates for real-time inbox changes
-- Retro MacOS-style frontend
-- Stats view protected with Basic Auth
-- Self-hosted, minimal footprint and simple setup
+- Temporary email addresses valid for **5 minutes** by default  
+- Manual **"Reload" button** to instantly generate a new email alias, invalidating the old one  
+- Expired aliases are automatically **blacklisted in Postfix** to prevent reuse  
+- **No outgoing mail** — receive-only service  
+- Real-time inbox updates via **WebSocket**  
+- Retro MacOS-style frontend with user-friendly UI, including:  
+  - **Copy to Clipboard** button for email addresses  
+  - **Reload** button to generate new aliases instantly  
+- Stats view protected with **HTTP Basic Auth**  
+- Self-hosted with minimal footprint and simple setup  
+- Ansible-managed configuration for Apache and Postfix, including:  
+  - **Anonymized logging** for enhanced privacy  
+  - Apache logs redirected to `/dev/null` for minimal data retention  
 
 ---
 
 ## Requirements
 
-- Ubuntu 24.04 LTS server
-- DNS A record pointing to the server
-- MX record for receiving emails
-- Recommended: Cloudflare for DNS and SSL
-- Ansible installed locally
-- Public IP and domain name configured
+- Ubuntu 24.04 LTS server  
+- DNS A record pointing to your server  
+- MX record configured to receive emails on the chosen domain  
+- Recommended: Cloudflare for DNS management and SSL termination  
+- Ansible installed locally for deployment  
+- Public IP and domain name properly configured  
+
+---
+
+## Installation
+
+### 1. Clone this Repository
+
+```bash
+git clone https://github.com/obrehmer/tempmail.git
+cd tempmail/ansible
 
 ---
 
@@ -113,20 +130,15 @@ Custom Error Pages
 Custom 404.html and 500.html templates are used to ensure consistent UX even during application errors.
 Troubleshooting
 
-    Ensure ports 80, 25, and optionally 443 are open
-
-    Check logs with: journalctl -u tempmail
-
-    Validate Apache configuration: apache2ctl configtest
-
-    If /stats fails, check that /var/tempmail/misc/stats.json exists and is writable
 
 ## Security Considerations
 
-    Emails are deleted after 5 minutes — no long-term storage
+Emails and aliases expire after 5 minutes — no long-term storage
 
-    All aliases are randomized and stored in the session only
+All aliases are randomized and stored in user sessions only
 
-    HTTPS via Cloudflare or Let's Encrypt is recommended
+HTTPS recommended via Cloudflare or Let's Encrypt for secure communication
 
-    Backend is write-protected from public users
+Backend files and directories are write-protected from public users
+
+Logging for Apache and Postfix is anonymized and minimized to protect privacy
