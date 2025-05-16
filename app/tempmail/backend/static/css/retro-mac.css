@@ -1,6 +1,6 @@
 /* retro-mac.css – 90s MacOS Style */
 
-@font-face {
+/* @font-face {
   font-family: 'Chicago';
   src: url('/static/fonts/ChicagoFLF.woff2') format('woff2');
   font-weight: normal;
@@ -13,7 +13,7 @@ body {
   color: black;
   padding: 2rem;
   margin: 0;
-}
+} */
 
 h1, h2 {
   font-weight: normal;
