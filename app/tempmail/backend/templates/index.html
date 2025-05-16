@@ -1,79 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="index, follow">
-  <meta name="description" content="Get a free disposable temporary email address valid for 5 minutes. Instantly receive emails without signing up.">
-  <meta name="keywords" content="temporary email, disposable email, 5-minute mail, free email, no signup, temp inbox">
-  <meta name="author" content="5-minute mail">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <meta name="description" content="Receive disposable, anonymous emails instantly. No sign-up. No tracking. Valid for 5 minutes only." />
+  <meta name="keywords" content="temporary email, disposable email, anonymous email, 5 minute mail, email spam protection" />
+  <meta name="author" content="tempmail.olifani.eu" />
+  <meta property="og:title" content="5-minute mail – Instant Disposable Email" />
+  <meta property="og:description" content="Fast, anonymous, and secure. No sign-up needed. Inbox expires in 5 minutes." />
+  <meta property="og:url" content="https://tempmail.olifani.eu" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/static/images/social-preview.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="5-minute mail – Instant Disposable Email" />
+  <meta name="twitter:description" content="Protect your real inbox. Use a disposable one." />
+  <meta name="twitter:image" content="/static/images/social-preview.png" />
 
-  <title>5-minute mail - Free Disposable Temporary Email</title>
+  <title>5-minute mail – Anonymous Disposable Email</title>
 
-  <!-- Open Graph / Facebook -->
-  <meta property="og:title" content="5-minute mail - Free Disposable Temporary Email">
-  <meta property="og:description" content="No signup. Just a quick inbox for those one-time emails. No storage, no tracking.">
-  <meta property="og:url" content="https://tempmail.olifani.de/">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://tempmail.olifani.de/static/images/social-preview.png">
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="5-minute mail - Free Disposable Temporary Email">
-  <meta name="twitter:description" content="Protect your inbox. Use a fast, disposable email valid for 5 minutes.">
-  <meta name="twitter:image" content="https://tempmail.olifani.de/static/images/social-preview.png">
-
-  <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="/static/css/retro-mac.css">
+  <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="/static/css/retro-mac.css" />
+  <link rel="stylesheet" href="/static/css/modern-retro.css" />
 </head>
 <body>
-  <div class="container">
-    <div class="window-header">Your temporary email address</div>    
+  <header class="site-header">
+    <h1>5-minute mail</h1>
+    <p>Disposable email address. Anonymous. Auto-expires.</p>
+  </header>
 
-    <!-- INFO SECTION WITH IMAGE -->
-    <div class="info-section">
-      <div class="info-text">
-<p style="max-width: 600px;">
-        This is a disposable, temporary email address intended for spam protection and one-time use only.
-        <strong>You can only receive emails</strong> — sending is not supported.
-        Messages are <strong>not stored permanently</strong> and will be deleted after 5 minutes.
-        Use it to protect your personal inbox from spam or sign up anonymously.
-</p>
-        <br><br>
-        <a href="/why-temp-email.html">Why use temp email?</a>
+  <main class="main-content">
+    <section class="email-info">
+      <p><strong>Receive-only</strong> temporary email address, valid for 5 minutes. Messages are deleted automatically. Ideal for one-time signups or spam protection.</p>
+    </section>
+
+    <section class="email-display-box">
+      <div id="email-address" class="email-display">{{ email }}</div>
+      <div class="button-row">
+        <button class="copy-button" onclick="copyEmail()">Copy</button>
+        <button onclick="location.href='/new-alias'">New Address</button>
+        <button onclick="location.reload()">Refresh Inbox</button>
       </div>
-      <div class="info-image">
-        <img src="/static/images/mac-email-icon.png" alt="Retro Mac email icon" class="email-icon">
-      </div>
-    </div>
-
-    <!-- DISPLAY EMAIL -->
-    <div id="email-address" class="email-display">{{ email }}</div>
-    <button class="copy-button spaced-bottom" onclick="copyEmail()">Copy</button>
-    <button class="copy-button spaced-bottom" onclick="location.href='/new-alias'">New</button>
-    {% if remaining_minutes <= 0 and remaining_seconds <= 0 %}
-      <strong>The email address has expired. A new one has been created.</strong>
-    {% else %}
-      <p>This email address is only valid for 5 minutes. Remaining time: <span id="countdown-timer"></span></p>
-    {% endif %}
-
-    <!-- REFRESH BUTTON -->
-    <button class="spaced-bottom" onclick="location.reload()">🔄 Refresh inbox</button>
-
-    <!-- EMAIL LIST -->
-    <ul>
-      {% for mail in emails %}
-        <li class="tile">
-          <strong>From: {{ mail.from }}</strong><br>
-          <a href="{{ url_for('view_email', email_id=email_id, filename=mail['filename']) }}">
-            {{ mail.subject }}
-          </a>
-        </li>
+      {% if remaining_minutes <= 0 and remaining_seconds <= 0 %}
+        <p class="expired">The email address has expired. A new one has been created.</p>
       {% else %}
-        <li class="tile">No messages.</li>
-      {% endfor %}
-    </ul>
-  </div>
+        <p class="timer">Expires in: <span id="countdown-timer"></span></p>
+      {% endif %}
+    </section>
+
+    <section class="email-list">
+      <h2>Inbox</h2>
+      <ul>
+        {% for mail in emails %}
+          <li class="mail-item">
+            <div><strong>From:</strong> {{ mail.from }}</div>
+            <a href="{{ url_for('view_email', email_id=email_id, filename=mail['filename']) }}">{{ mail.subject }}</a>
+          </li>
+        {% else %}
+          <li class="mail-item">No messages received yet.</li>
+        {% endfor %}
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a href="/why-temp-email.html">Why use temp email?</a> • <a href="https://github.com/obrehmer/tempmail">Source & Changelog</a>
+  </footer>
 
   <script>
     window.remainingTime = {{ session['remaining_time'] | default(0) }};
@@ -81,14 +73,12 @@
       const emailText = document.getElementById('email-address').innerText;
       navigator.clipboard.writeText(emailText).then(() => {
         const btn = document.querySelector('.copy-button');
-        btn.innerText = '✅ Copied';
-        setTimeout(() => btn.innerText = '📋 Copy', 1500);
+        btn.innerText = 'Copied!';
+        setTimeout(() => btn.innerText = 'Copy', 1500);
       });
     }
-
   </script>
   <script src="/static/js/timer.js"></script>
-
 </body>
 </html>
 

@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>{{ mail.subject }}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="description" content="View the content of your temporary email: {{ mail.subject }}">
-  <meta name="keywords" content="temporary email, disposable inbox, view message, 2-minute mail">
-  <meta name="author" content="2-minute mail">
-  <meta property="og:title" content="{{ mail.subject }}">
-  <meta property="og:description" content="Temporary email from {{ mail.from }}">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="{{ request.url }}">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="{{ mail.subject }}">
-  <meta name="twitter:description" content="Temporary email from {{ mail.from }}">
-  <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="/static/css/retro-mac.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="View the content of your temporary email: {{ mail.subject }}" />
+  <meta name="keywords" content="temporary email, disposable inbox, view message, 2-minute mail" />
+  <meta name="author" content="tempmail.olifani.eu" />
+  <meta property="og:title" content="{{ mail.subject }}" />
+  <meta property="og:description" content="Temporary email from {{ mail.from }}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{{ request.url }}" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="{{ mail.subject }}" />
+  <meta name="twitter:description" content="Temporary email from {{ mail.from }}" />
+  <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="/static/css/retro-mac.css" />
+  <link rel="stylesheet" href="/static/css/modern-retro.css" />
 </head>
 <body>
   <div class="container">
@@ -25,9 +26,9 @@
       <p><strong>From:</strong> {{ mail.from }}</p>
       <p><strong>To:</strong> {{ mail.to }}</p>
     </div>
-    <hr>
+    <hr />
     <pre>{{ mail.body|safe }}</pre>
-    <hr>
+    <hr />
     <a href="{{ url_for('index') }}">← Back to inbox</a>
   </div>
 </body>
