@@ -25,3 +25,31 @@ function updateTimer() {
 
 updateTimer();
 
+// Fortschrittsbalken (visueller Timer)
+(function () {
+  const totalTime = 300; // 5 Minuten in Sekunden
+  let timeLeft = window.remainingTime || 0;
+  const bar = document.getElementById("progress-bar");
+
+  function updateProgressBar() {
+    if (!bar || timeLeft < 0) return;
+
+    const percent = (timeLeft / totalTime) * 100;
+    bar.style.width = percent + "%";
+
+    // Farbverlauf: grün > orange > rot
+    if (percent > 66) {
+      bar.style.backgroundColor = "#4caf50"; // grün
+    } else if (percent > 33) {
+      bar.style.backgroundColor = "#ff9800"; // orange
+    } else {
+      bar.style.backgroundColor = "#f44336"; // rot
+    }
+
+    timeLeft--;
+    setTimeout(updateProgressBar, 1000);
+  }
+
+  document.addEventListener("DOMContentLoaded", updateProgressBar);
+})();
+
