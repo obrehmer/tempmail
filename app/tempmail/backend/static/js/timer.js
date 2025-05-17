@@ -53,3 +53,10 @@ updateTimer();
   document.addEventListener("DOMContentLoaded", updateProgressBar);
 })();
 
+function closeBanner() {
+  const banner = document.getElementById('aiBanner');
+  if (banner) {
+    banner.style.display = 'none';
+  }
+}
+
