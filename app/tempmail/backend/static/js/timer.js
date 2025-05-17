@@ -57,6 +57,14 @@ function closeBanner() {
   const banner = document.getElementById('aiBanner');
   if (banner) {
     banner.style.display = 'none';
+    sessionStorage.setItem('aiBannerClosed', 'true');
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('aiBannerClosed') === 'true') {
+    const banner = document.getElementById('aiBanner');
+    if (banner) banner.style.display = 'none';
+  }
+});
 
