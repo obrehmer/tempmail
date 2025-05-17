@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v1.6.0] - 2025-05-17
+
+### Added
+- ✨ Fully redesigned `index.html`, `email_view.html`, `why-temp-email.html`, and `stats.html` with a modern-retro aesthetic and enhanced usability.
+- 📬 Dismissible top banner linking to [ai.olifani.eu](https://ai.olifani.eu), stored in session memory when closed.
+- ⏳ Visual progress bar below the email address indicating the remaining validity time (5 minutes).
+- 📜 `robots.txt` updated to exclude `/stats.html` from search engine indexing.
+- 🧪 `modern-retro.css` applied globally across all views.
+
+### Changed
+- 🧼 Moved inline JavaScript from `index.html` to external `timer.js` file.
+- 🧭 Improved HTML semantics, accessibility, and SEO meta structure across all pages.
+- 🧠 Open Graph and Twitter metadata refined for better social sharing previews.
+
+---
+
 ## [v1.5.0] - 2025-05-14
 
 ### Added
@@ -121,6 +137,4 @@ All notable changes to this project will be documented in this file.
 - 🔐 IP whitelisting via iptables for Cloudflare origin traffic.
 - 📊 Daily alias creation stats stored in `stats.json`.
 - 🧹 Cron job for daily cleanup of expired email files.
-
----
 
