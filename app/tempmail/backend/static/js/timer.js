@@ -68,3 +68,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+  window.remainingTime = {{ session['remaining_time'] | default(0) }};
+  function copyEmail() {
+    const emailText = document.getElementById('email-address').innerText;
+    navigator.clipboard.writeText(emailText).then(() => {
+      const btn = document.querySelector('.copy-button');
+      btn.innerText = 'Copied!';
+      setTimeout(() => btn.innerText = 'Copy', 1500);
+    });
+  }
+

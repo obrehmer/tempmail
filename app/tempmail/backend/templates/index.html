@@ -22,29 +22,6 @@
   <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="/static/css/retro-mac.css" />
   <link rel="stylesheet" href="/static/css/modern-retro.css" />
-  <style>
-    .mail-item a {
-      text-decoration: underline;
-      color: #0033cc;
-      font-weight: bold;
-    }
-
-    .mail-item a:hover {
-      color: #001199;
-      cursor: pointer;
-    }
-
-    .email-list-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 1rem;
-    }
-
-    .email-timer-bar {
-      margin-top: 0.5rem;
-    }
-  </style>
 </head>
 <body>
 
@@ -104,17 +81,6 @@
   <a href="/why-temp-email.html">Why use temp email?</a> • <a href="https://github.com/obrehmer/tempmail">Source & Changelog</a>
 </footer>
 
-<script>
-  window.remainingTime = {{ session['remaining_time'] | default(0) }};
-  function copyEmail() {
-    const emailText = document.getElementById('email-address').innerText;
-    navigator.clipboard.writeText(emailText).then(() => {
-      const btn = document.querySelector('.copy-button');
-      btn.innerText = 'Copied!';
-      setTimeout(() => btn.innerText = 'Copy', 1500);
-    });
-  }
-</script>
 <script src="/static/js/timer.js"></script>
 </body>
 </html>

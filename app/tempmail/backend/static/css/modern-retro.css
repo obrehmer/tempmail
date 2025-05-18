@@ -304,3 +304,65 @@ ul {
 }
 
 
+/* Verbesserte Darstellung für Mail-Subjects */
+.mail-item a {
+  text-decoration: underline;
+  color: #0055cc;
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 0.2rem;
+}
+
+.mail-item a:hover {
+  color: #002288;
+}
+
+/* Flex-Anordnung von Inbox-Header und Refresh-Button */
+.email-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 0.5rem;
+}
+
+.email-list-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+/* Refresh Inbox Button */
+.email-list-header button {
+  background-color: #e0e0e0;
+  border: 1px solid #999;
+  padding: 4px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.email-list-header button:hover {
+  background-color: #d0d0d0;
+}
+
+/* Kompaktere Darstellung */
+.email-display-box,
+.email-info,
+.email-list {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+
+.button-row {
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.email-display {
+  font-size: 1.1rem;
+  word-break: break-all;
+}
+
