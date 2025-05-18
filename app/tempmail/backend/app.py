@@ -199,7 +199,7 @@ def not_found_error(error):
 def internal_error(error):
     return render_template('500.html'), 500
 
-@app.route("/temporary-email")
+@app.route("/temporary-email.html")
 def temporary_email():
     return render_template("temporary-email.html")
 
