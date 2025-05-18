@@ -22,6 +22,29 @@
   <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="/static/css/retro-mac.css" />
   <link rel="stylesheet" href="/static/css/modern-retro.css" />
+  <style>
+    .mail-item a {
+      text-decoration: underline;
+      color: #0033cc;
+      font-weight: bold;
+    }
+
+    .mail-item a:hover {
+      color: #001199;
+      cursor: pointer;
+    }
+
+    .email-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .email-timer-bar {
+      margin-top: 0.5rem;
+    }
+  </style>
 </head>
 <body>
 
@@ -33,67 +56,66 @@
   <button id="close-banner" onclick="document.getElementById('ai-banner').style.display='none'">✕</button>
 </div>
 
+<header class="site-header">
+  <h1>5-minute mail</h1>
+  <p>Disposable email address. Anonymous. Auto-expires.</p>
+</header>
 
-  <header class="site-header">
-    <h1>5-minute mail</h1>
-    <p>Disposable email address. Anonymous. Auto-expires.</p>
-  </header>
+<main class="main-content">
+  <section class="email-info">
+    <p><strong>Receive-only</strong> temporary email address, valid for 5 minutes. Messages are deleted automatically.</p>
+  </section>
 
-  <main class="main-content">
-    <section class="email-info">
-      <p><strong>Receive-only</strong> temporary email address, valid for 5 minutes. Messages are deleted automatically. Ideal for one-time signups or spam protection.</p>
-    </section>
+  <section class="email-display-box">
+    <div id="email-address" class="email-display">{{ email }}</div>
+    <div class="button-row">
+      <button class="copy-button" onclick="copyEmail()">Copy</button>
+      <button onclick="location.href='/new-alias'">New Address</button>
+    </div>
+    {% if remaining_minutes <= 0 and remaining_seconds <= 0 %}
+      <p class="expired">The email address has expired. A new one has been created.</p>
+    {% else %}
+      <p class="timer">Expires in: <span id="countdown-timer"></span></p>
+    {% endif %}
+    <div class="email-timer-bar">
+      <div id="progress-bar"></div>
+    </div>
+  </section>
 
-    <section class="email-display-box">
-      <div id="email-address" class="email-display">{{ email }}</div>
-      <div class="button-row">
-        <button class="copy-button" onclick="copyEmail()">Copy</button>
-        <button onclick="location.href='/new-alias'">New Address</button>
-        <button onclick="location.reload()">Refresh Inbox</button>
-      </div>
-      {% if remaining_minutes <= 0 and remaining_seconds <= 0 %}
-        <p class="expired">The email address has expired. A new one has been created.</p>
-      {% else %}
-        <p class="timer">Expires in: <span id="countdown-timer"></span></p>
-      {% endif %}
-
-      <div class="email-timer-bar">
-  	<div id="progress-bar"></div>
-      </div>
-
-    </section>
-
-    <section class="email-list">
+  <section class="email-list">
+    <div class="email-list-header">
       <h2>Inbox</h2>
-      <ul>
-        {% for mail in emails %}
-          <li class="mail-item">
-            <div><strong>From:</strong> {{ mail.from }}</div>
-            <a href="{{ url_for('view_email', email_id=email_id, filename=mail['filename']) }}">{{ mail.subject }}</a>
-          </li>
-        {% else %}
-          <li class="mail-item">No messages received yet.</li>
-        {% endfor %}
-      </ul>
-    </section>
-  </main>
+      <button onclick="location.reload()">🔄 Refresh Inbox</button>
+    </div>
+    <ul>
+      {% for mail in emails %}
+        <li class="mail-item">
+          <div><strong>From:</strong> {{ mail.from }}</div>
+          <a href="{{ url_for('view_email', email_id=email_id, filename=mail['filename']) }}">{{ mail.subject }}</a>
+        </li>
+      {% else %}
+        <li class="mail-item">No messages received yet.</li>
+      {% endfor %}
+    </ul>
+  </section>
+</main>
 
-  <footer class="site-footer">
-    <a href="/why-temp-email.html">Why use temp email?</a> • <a href="https://github.com/obrehmer/tempmail">Source & Changelog</a>
-  </footer>
+<footer class="site-footer">
+  <a href="/why-temp-email.html">Why use temp email?</a> • <a href="https://github.com/obrehmer/tempmail">Source & Changelog</a>
+</footer>
 
-  <script>
-    window.remainingTime = {{ session['remaining_time'] | default(0) }};
-    function copyEmail() {
-      const emailText = document.getElementById('email-address').innerText;
-      navigator.clipboard.writeText(emailText).then(() => {
-        const btn = document.querySelector('.copy-button');
-        btn.innerText = 'Copied!';
-        setTimeout(() => btn.innerText = 'Copy', 1500);
-      });
-    }
-  </script>
-  <script src="/static/js/timer.js"></script>
+<script>
+  window.remainingTime = {{ session['remaining_time'] | default(0) }};
+  function copyEmail() {
+    const emailText = document.getElementById('email-address').innerText;
+    navigator.clipboard.writeText(emailText).then(() => {
+      const btn = document.querySelector('.copy-button');
+      btn.innerText = 'Copied!';
+      setTimeout(() => btn.innerText = 'Copy', 1500);
+    });
+  }
+</script>
+<script src="/static/js/timer.js"></script>
 </body>
 </html>
 
