@@ -1,35 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>{{ mail.subject }}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="description" content="View the content of your temporary email: {{ mail.subject }}">
-  <meta name="keywords" content="temporary email, disposable inbox, view message, 2-minute mail">
-  <meta name="author" content="2-minute mail">
-  <meta property="og:title" content="{{ mail.subject }}">
-  <meta property="og:description" content="Temporary email from {{ mail.from }}">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="{{ request.url }}">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="{{ mail.subject }}">
-  <meta name="twitter:description" content="Temporary email from {{ mail.from }}">
-  <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="/static/css/retro-mac.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="Read your received temp mail and reply anonymously." />
+  <meta name="author" content="tempmail.olifani.eu" />
+  <title>View Message | 5-minute mail</title>
+
+  <link rel="stylesheet" href="/static/css/retro-mac.css" />
+  <link rel="stylesheet" href="/static/css/modern-retro.css" />
 </head>
 <body>
+
   <div class="container">
-    <div class="window-header">{{ mail.subject }}</div>
+    <h1>Received Message</h1>
+
     <div class="tile">
       <p><strong>From:</strong> {{ mail.from }}</p>
       <p><strong>To:</strong> {{ mail.to }}</p>
+      <p><strong>Subject:</strong> {{ mail.subject }}</p>
+      <p><strong>Date:</strong> {{ mail.date }}</p>
+      <hr />
+      <pre>{{ mail.body }}</pre>
     </div>
-    <hr>
-    <pre>{{ mail.body|safe }}</pre>
-    <hr>
-    <a href="{{ url_for('index') }}">← Back to inbox</a>
+
+    <div class="tile">
+      <h2>Reply to this message</h2>
+      <form action="/send-reply" method="POST">
+        <input type="hidden" name="reply_to" value="{{ mail.from }}" />
+        <input type="hidden" name="alias" value="{{ email_id }}" />
+
+        <div class="form-group">
+          <label for="subject">Subject:</label>
+          <input type="text" id="subject" name="subject" class="form-input" value="Re: {{ mail.subject }}" required />
+        </div>
+
+        <div class="form-group">
+          <label for="body">Your Reply:</label>
+          <textarea id="body" name="body" rows="8" class="form-input" required></textarea>
+        </div>
+
+        <button type="submit" class="button-primary">Send Reply</button>
+        <a href="/" class="button-secondary">Back to Inbox</a>
+      </form>
+    </div>
   </div>
+
 </body>
 </html>
 
