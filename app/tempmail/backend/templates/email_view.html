@@ -93,7 +93,7 @@
     <section class="email-details">
       <h2>{{ mail.subject }}</h2>
       <p><strong>From:</strong> {{ mail.from }}</p>
-      <p><strong>To:</strong> {{ alias }}@inboxcl.xyz</p>
+      <p><strong>To:</strong> {{ email }}</p>
       <p><strong>Date:</strong> {{ mail.date }}</p>
       <hr />
       <pre>{{ mail.body }}</pre>
@@ -103,7 +103,7 @@
       <h3>Reply to this email</h3>
       <form action="{{ url_for('send_reply') }}" method="POST">
         <input type="hidden" name="reply_to" value="{{ mail.from }}" />
-        <input type="hidden" name="alias" value="{{ alias }}" />
+        <input type="hidden" name="alias" value="{{ email }}" />
         <input type="text" name="subject" placeholder="Subject" value="Re: {{ mail.subject }}" required />
         <textarea name="body" placeholder="Write your reply here..." required></textarea>
         <button type="submit">Send Reply</button>
