@@ -33,6 +33,9 @@
       <form method="POST" action="{{ url_for('send_reply') }}" class="reply-form">
         <input type="hidden" name="reply_to" value="{{ mail.from }}">
         <input type="hidden" name="alias" value="{{ alias }}">
+        <input type="hidden" name="filename" value="{{ mail.filename }}">
+</form>
+
         
         <label for="subject">Subject:</label>
         <input type="text" id="subject" name="subject" value="Re: {{ mail.subject }}" required />
