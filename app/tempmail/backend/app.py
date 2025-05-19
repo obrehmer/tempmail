@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, redirect, url_for, send_from_directory, abort, request
+from flask import Flask, render_template, session, redirect, url_for, send_from_directory, abort, request, flash
 from flask_socketio import SocketIO
 
 import os
