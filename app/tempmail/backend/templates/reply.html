@@ -35,6 +35,7 @@
       <form action="/send-reply" method="POST">
         <input type="hidden" name="reply_to" value="{{ original_sender }}" />
         <input type="hidden" name="alias" value="{{ alias }}" />
+  <input type="hidden" name="filename" value="{{ mail.filename }}">
 
         <div class="form-group">
           <label for="subject">Subject:</label>

@@ -104,15 +104,15 @@
         comment: Allow HTTP (port 80) from Cloudflare only
       loop: "{{ cloudflare_sources }}"
 
-    - name: Block outgoing SMTP traffic
-      iptables:
-        chain: OUTPUT
-        protocol: tcp
-        destination_port: "{{ smtp }}"
-        jump: REJECT
-        action: insert
-        rule_num: 1
-        comment: Prevent sending emails
+#    - name: Block outgoing SMTP traffic
+#      iptables:
+##        chain: OUTPUT
+#        protocol: tcp
+#        destination_port: "{{ smtp }}"
+#        jump: REJECT
+#        action: insert
+#        rule_num: 1
+#        comment: Prevent sending emails
 
     - name: Allow incoming traffic from localhost
       iptables:
