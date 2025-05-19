@@ -164,7 +164,14 @@ def view_email(email_id, filename):
     with open(file_path) as f:
         mail = json.load(f)
 
-    return render_template('email_view.html', mail=mail)
+    # Stelle sicher, dass alle erwarteten Felder vorhanden sind
+    mail.setdefault("from", "Unknown sender")
+    mail.setdefault("to", f"{email_id}@inboxcl.xyz")
+    mail.setdefault("subject", "(No subject)")
+    mail.setdefault("date", "Unknown date")
+    mail.setdefault("body", "[No content]")
+
+    return render_template("email_view.html", mail=mail, alias=email_id, filename=filename)
 
 @app.route('/delete_emails/<email_id>')
 def delete_emails(email_id):
