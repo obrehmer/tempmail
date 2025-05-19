@@ -229,7 +229,8 @@ def send_reply():
 
     if not reply_to or not alias or not subject or not body:
         flash("Missing required fields.", "error")
-        return redirect(url_for('view_email', email_id=alias))
+        return redirect(url_for('view_email', email_id=alias, filename=request.form.get('filename')))
+
 
 
     try:
@@ -246,7 +247,8 @@ def send_reply():
     except Exception as e:
         flash(f"Failed to send reply: {str(e)}", "error")
 
-    return redirect(url_for('view_email', email_id=alias))
+    return redirect(url_for('view_email', email_id=alias, filename=request.form.get('filename')))
+
 
 
 if __name__ == '__main__':
