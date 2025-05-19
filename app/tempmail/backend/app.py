@@ -226,16 +226,19 @@ def send_reply():
     alias = request.form.get('alias')
     subject = request.form.get('subject')
     body = request.form.get('body')
+    filename = request.form.get('filename')
 
-    if not reply_to or not alias or not subject or not body:
+    if not reply_to or not alias or not subject or not body or not filename:
         flash("Missing required fields.", "error")
-        return redirect(url_for('view_email', email_id=alias, filename=request.form.get('filename')))
-
-
+        # Wenn filename fehlt, redirect fallback auf Inbox ohne Datei
+        if filename:
+            return redirect(url_for('view_email', email_id=alias, filename=filename))
+        else:
+            return redirect(url_for('index'))
 
     try:
         msg = EmailMessage()
-        msg['From'] = f"{alias}@inboxcl.xyz" 
+        msg['From'] = f"{alias}@inboxcl.xyz"
         msg['To'] = reply_to
         msg['Subject'] = subject
         msg.set_content(body)
@@ -247,11 +250,8 @@ def send_reply():
     except Exception as e:
         flash(f"Failed to send reply: {str(e)}", "error")
 
-    return redirect(url_for('view_email', email_id=alias, filename=request.form.get('filename')))
-
-
+    return redirect(url_for('view_email', email_id=alias, filename=filename))
 
 if __name__ == '__main__':
     ensure_stats_file()
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False)
-
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
