@@ -1,10 +1,19 @@
-from flask import Flask, render_template, session, redirect, url_for, send_from_directory, abort
+from flask import Flask, render_template, session, redirect, url_for, send_from_directory, abort, request
 from flask_socketio import SocketIO
-import os, json, uuid
-import time, random, string
+
+import os
+import json
+import uuid
+import time
+import random
+import string
+import smtplib
+import pwd
+
 from datetime import datetime, timedelta
 from pathlib import Path
-import pwd
+from email.message import EmailMessage
+
 
 app = Flask(__name__)
 app.secret_key = 'super-secret-key'
@@ -202,6 +211,41 @@ def internal_error(error):
 @app.route("/temporary-email.html")
 def temporary_email():
     return render_template("temporary-email.html")
+
+
+@app.route('/reply/<email_id>/<filename>', methods=['GET', 'POST'])
+def reply(email_id, filename):
+    mail_path = os.path.join(BASE_PATH, email_id, filename)
+    if not os.path.exists(mail_path):
+        return "Message not found", 404
+
+    with open(mail_path, 'r') as f:
+        original = json.load(f)
+
+    original_from = original['from']
+    original_subject = original.get('subject', '(no subject)')
+    reply_subject = f"Re: {original_subject}"
+
+    if request.method == 'POST':
+        body = request.form['message']
+        reply_msg = EmailMessage()
+        reply_msg['Subject'] = reply_subject
+        reply_msg['To'] = original_from
+        reply_msg['From'] = f"{email_id}@tempmail.olifani.eu"
+        reply_msg.set_content(body)
+
+        try:
+            with smtplib.SMTP('localhost') as smtp:
+                smtp.send_message(reply_msg)
+            return redirect(url_for('view_email', email_id=email_id, filename=filename))
+        except Exception as e:
+            return f"Error sending reply: {e}", 500
+
+    return render_template('reply.html',
+                           to=original_from,
+                           subject=reply_subject,
+                           email_id=email_id,
+                           filename=filename)
 
 
 if __name__ == '__main__':
