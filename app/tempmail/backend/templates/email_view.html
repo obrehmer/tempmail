@@ -2,50 +2,119 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="noindex, nofollow" />
-  <meta name="description" content="Read your received temp mail and reply anonymously." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index, follow" />
+  <meta name="description" content="View your temporary disposable email and reply safely. No spam, no signup." />
+  <meta name="keywords" content="temporary email, disposable email, reply email, anonymous email" />
   <meta name="author" content="tempmail.olifani.eu" />
-  <title>View Message | 5-minute mail</title>
+  <title>View Email - 5-minute mail</title>
 
+  <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="/static/css/retro-mac.css" />
   <link rel="stylesheet" href="/static/css/modern-retro.css" />
+  
+  <style>
+    a.email-subject-link {
+      color: #0078d7;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    a.email-subject-link:hover {
+      color: #005a9e;
+    }
+    .flash-messages {
+      margin-bottom: 1em;
+      padding: 0.5em;
+      border-radius: 4px;
+    }
+    .flash.success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .flash.error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .reply-form {
+      margin-top: 2em;
+      padding: 1em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #f9f9f9;
+    }
+    .reply-form textarea {
+      width: 100%;
+      min-height: 100px;
+      resize: vertical;
+      font-family: inherit;
+      font-size: 1em;
+      padding: 0.5em;
+    }
+    .reply-form input[type="text"] {
+      width: 100%;
+      margin-bottom: 0.5em;
+      padding: 0.4em;
+      font-family: inherit;
+      font-size: 1em;
+    }
+    .reply-form button {
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      padding: 0.5em 1em;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    .reply-form button:hover {
+      background-color: #005a9e;
+    }
+  </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Received Message</h1>
+  <header class="site-header">
+    <h1>5-minute mail - View Email</h1>
+    <p><a href="/">← Back to Inbox</a></p>
+  </header>
 
-    <div class="tile">
+  <main class="main-content">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <section class="email-details">
+      <h2>{{ mail.subject }}</h2>
       <p><strong>From:</strong> {{ mail.from }}</p>
-      <p><strong>To:</strong> {{ mail.to }}</p>
-      <p><strong>Subject:</strong> {{ mail.subject }}</p>
+      <p><strong>To:</strong> {{ alias }}@your-tempmail-domain.com</p>
       <p><strong>Date:</strong> {{ mail.date }}</p>
       <hr />
       <pre>{{ mail.body }}</pre>
-    </div>
+    </section>
 
-    <div class="tile">
-      <h2>Reply to this message</h2>
-      <form action="/send-reply" method="POST">
+    <section class="reply-form">
+      <h3>Reply to this email</h3>
+      <form action="{{ url_for('send_reply') }}" method="POST">
         <input type="hidden" name="reply_to" value="{{ mail.from }}" />
-        <input type="hidden" name="alias" value="{{ email_id }}" />
-
-        <div class="form-group">
-          <label for="subject">Subject:</label>
-          <input type="text" id="subject" name="subject" class="form-input" value="Re: {{ mail.subject }}" required />
-        </div>
-
-        <div class="form-group">
-          <label for="body">Your Reply:</label>
-          <textarea id="body" name="body" rows="8" class="form-input" required></textarea>
-        </div>
-
-        <button type="submit" class="button-primary">Send Reply</button>
-        <a href="/" class="button-secondary">Back to Inbox</a>
+        <input type="hidden" name="alias" value="{{ alias }}" />
+        <input type="text" name="subject" placeholder="Subject" value="Re: {{ mail.subject }}" required />
+        <textarea name="body" placeholder="Write your reply here..." required></textarea>
+        <button type="submit">Send Reply</button>
       </form>
-    </div>
-  </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <a href="/why-temp-email.html">Why use temp email?</a> • <a href="https://github.com/obrehmer/tempmail">Source & Changelog</a>
+  </footer>
 
 </body>
 </html>

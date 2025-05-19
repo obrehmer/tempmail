@@ -213,39 +213,33 @@ def temporary_email():
     return render_template("temporary-email.html")
 
 
-@app.route('/reply/<email_id>/<filename>', methods=['GET', 'POST'])
-def reply(email_id, filename):
-    mail_path = os.path.join(BASE_PATH, email_id, filename)
-    if not os.path.exists(mail_path):
-        return "Message not found", 404
+@app.route('/send-reply', methods=['POST'])
+def send_reply():
+    reply_to = request.form.get('reply_to')
+    alias = request.form.get('alias')
+    subject = request.form.get('subject')
+    body = request.form.get('body')
 
-    with open(mail_path, 'r') as f:
-        original = json.load(f)
+    if not reply_to or not alias or not subject or not body:
+        flash("Missing required fields.", "error")
+        return redirect(url_for('view_email', email_id=alias))
 
-    original_from = original['from']
-    original_subject = original.get('subject', '(no subject)')
-    reply_subject = f"Re: {original_subject}"
 
-    if request.method == 'POST':
-        body = request.form['message']
-        reply_msg = EmailMessage()
-        reply_msg['Subject'] = reply_subject
-        reply_msg['To'] = original_from
-        reply_msg['From'] = f"{email_id}@tempmail.olifani.eu"
-        reply_msg.set_content(body)
+    try:
+        msg = EmailMessage()
+        msg['From'] = f"{alias}@inboxcl.xyz" 
+        msg['To'] = reply_to
+        msg['Subject'] = subject
+        msg.set_content(body)
 
-        try:
-            with smtplib.SMTP('localhost') as smtp:
-                smtp.send_message(reply_msg)
-            return redirect(url_for('view_email', email_id=email_id, filename=filename))
-        except Exception as e:
-            return f"Error sending reply: {e}", 500
+        with smtplib.SMTP('localhost') as smtp:
+            smtp.send_message(msg)
 
-    return render_template('reply.html',
-                           to=original_from,
-                           subject=reply_subject,
-                           email_id=email_id,
-                           filename=filename)
+        flash("Reply sent successfully.", "success")
+    except Exception as e:
+        flash(f"Failed to send reply: {str(e)}", "error")
+
+    return redirect(url_for('view_email', email_id=alias))
 
 
 if __name__ == '__main__':
