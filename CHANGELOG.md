@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 ---
+## [v1.7.0] - 2025-05-20
+
+### Added
+
+- A new function ‘reply mail’ has been added, very rudimentary. You can reply to emails you have entered.
 
 ## [v1.6.0] - 2025-05-17
 
