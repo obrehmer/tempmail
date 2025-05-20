@@ -228,13 +228,45 @@ def send_reply():
     body = request.form.get('body')
     filename = request.form.get('filename')
 
-    print(f"Sending mail to {to_address} with subject '{subject}'")
+    print(f"Sending mail to {reply_to} with subject '{subject}'")
 
     return '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Mail verschickt</title>
         <script>
-          alert("Mail wurde erfolgreich verschickt!");
-          window.location.href = "/index.html";
+            // Lade index.html im Hintergrund
+            setTimeout(function() {
+                window.location.href = "/index.html";
+            }, 100); // ganz kurz warten
+
+            function closeWindow() {
+                window.close(); // funktioniert nur bei Fenstern, die via JS geöffnet wurden
+            }
         </script>
+        <style>
+            body {
+                font-family: sans-serif;
+                text-align: center;
+                padding-top: 50px;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 16px;
+                border: none;
+                background: #3498db;
+                color: white;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Mail wurde erfolgreich verschickt!</h2>
+        <button onclick="closeWindow()">Schließen</button>
+    </body>
+    </html>
     '''
 
     if not reply_to or not alias or not subject or not filename:
