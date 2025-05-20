@@ -259,7 +259,7 @@ def send_reply():
                 // Lade index.html im Hintergrund automatisch
                 setTimeout(function() {
                     window.location.href = "/index.html";
-                }, 100);
+                }, 5000);
 
                 function closeWindow() {
                     window.close(); // Funktioniert nur bei per JS geöffnetem Fenster
