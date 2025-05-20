@@ -28,26 +28,27 @@
       <pre>{{ mail.body }}</pre>
     </section>
 
-    <section class="reply-section">
-      <h3>Reply to this message</h3>
-      <form method="POST" action="{{ url_for('send_reply') }}" class="reply-form">
-        <input type="hidden" name="reply_to" value="{{ mail.from }}">
-        <input type="hidden" name="alias" value="{{ alias }}">
-	<input type="hidden" name="filename" value="{{ filename }}">
+<section class="reply-section">
+  <h3>Reply to this message</h3>
+  <form method="POST" action="{{ url_for('send_reply') }}" class="reply-form">
+    <input type="hidden" name="reply_to" value="{{ mail.from }}">
+    <input type="hidden" name="alias" value="{{ alias }}">
+    <input type="hidden" name="filename" value="{{ filename }}">
 
-        <label for="subject">Subject:</label>
-        <input type="text" id="subject" name="subject" value="Re: {{ mail.subject }}" required />
+    <label for="subject">Subject:</label>
+    <input type="text" id="subject" name="subject" value="Re: {{ mail.subject }}" required style="width: 100%; margin-bottom: 1em;" />
 
-        <label for="body">Message:</label>
-        <textarea id="body" name="body" rows="8" placeholder="Type your reply here..." required></textarea>
+    <label for="body">Message:</label><br>
+    <textarea id="body" name="body" rows="8" placeholder="Type your reply here..." required style="width: 100%; margin-bottom: 1em;"></textarea>
 
-        <button type="submit" class="btn btn-primary">Send Reply</button>
-      </form>
-    </section>
+    <button type="submit" class="btn btn-primary" style="margin-bottom: 1em;">Send Reply</button>
+  </form>
+</section>
 
-    <div class="navigation">
-      <a href="{{ url_for('index') }}">&larr; Back to inbox</a>
-    </div>
+<div class="navigation" style="margin-top: 1em;">
+  <a href="{{ url_for('index') }}">&larr; Back to inbox</a>
+</div>
+
   </main>
 
   <footer class="site-footer">
