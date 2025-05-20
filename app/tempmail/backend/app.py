@@ -257,7 +257,7 @@ def send_reply():
         msg['From'] = f"{alias}@inboxcl.xyz"
         msg['To'] = reply_to
         msg['Subject'] = subject
-        msg.set_content(body)
+        msg.set_content(full_body)
 
         with smtplib.SMTP('localhost') as smtp:
             smtp.send_message(msg)
