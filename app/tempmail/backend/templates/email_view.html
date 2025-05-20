@@ -33,16 +33,17 @@
       <form method="POST" action="{{ url_for('send_reply') }}" class="reply-form">
         <input type="hidden" name="reply_to" value="{{ mail.from }}">
         <input type="hidden" name="alias" value="{{ alias }}">
-        <input type="hidden" name="filename" value="{{ mail.filename }}">
+	<input type="hidden" name="filename" value="{{ filename }}">
 
-        
+
+
         <label for="subject">Subject:</label>
         <input type="text" id="subject" name="subject" value="Re: {{ mail.subject }}" required />
-        
+
         <label for="body">Message:</label>
         <textarea id="body" name="body" rows="8" placeholder="Type your reply here..." required></textarea>
 
-        <button type="submit">Send Reply</button>
+        <button type="submit" class="btn btn-primary">Send Reply</button>
       </form>
     </section>
 
@@ -58,4 +59,3 @@
 
 </body>
 </html>
-

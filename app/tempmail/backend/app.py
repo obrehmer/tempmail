@@ -228,7 +228,7 @@ def send_reply():
     body = request.form.get('body')
     filename = request.form.get('filename')
 
-    if not reply_to or not alias or not subject or not body or not filename:
+    if not reply_to or not alias or not subject or not filename:
         flash("Missing required fields.", "error")
         # Wenn filename fehlt, redirect fallback auf Inbox ohne Datei
         if filename:
@@ -254,4 +254,4 @@ def send_reply():
 
 if __name__ == '__main__':
     ensure_stats_file()
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False)
