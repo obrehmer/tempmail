@@ -228,7 +228,6 @@ def send_reply():
     body = request.form.get('body')
     filename = request.form.get('filename')
 
-    # Prüfe, ob alle notwendigen Felder vorhanden sind
     if not reply_to or not alias or not subject or not filename:
         flash("Missing required fields.", "error")
         if filename:
@@ -237,7 +236,23 @@ def send_reply():
             return redirect(url_for('index'))
 
     try:
-        # Baue und sende die E-Mail
+
+        inbox_dir = os.path.join(EMAIL_DIR, alias)
+        original_path = os.path.join(inbox_dir, filename)
+
+        original_body = ""
+        if os.path.exists(original_path):
+            with open(original_path, 'r') as f:
+                try:
+                    original = json.load(f)
+                    original_body = original.get("body", "")
+                except Exception as e:
+                    original_body = "[Fehler beim Laden der ursprünglichen Nachricht]"
+
+        quoted_original = "\n".join(["> " + line for line in original_body.splitlines()])
+
+        full_body = f"{body}\n\n--- Original message ---\n{quoted_original}"
+
         msg = EmailMessage()
         msg['From'] = f"{alias}@inboxcl.xyz"
         msg['To'] = reply_to
@@ -249,7 +264,6 @@ def send_reply():
 
         print(f"✅ Reply sent to {reply_to} with subject '{subject}'")
 
-        # Wenn erfolgreich: HTML-Fenster mit "Mail gesendet"-Hinweis anzeigen
         return '''
         <!DOCTYPE html>
         <html>
@@ -259,7 +273,7 @@ def send_reply():
                 // Lade index.html im Hintergrund automatisch
                 setTimeout(function() {
                     window.location.href = "/index.html";
-                }, 5000);
+                }, 2000);
 
                 function closeWindow() {
                     window.close(); // Funktioniert nur bei per JS geöffnetem Fenster
