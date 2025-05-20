@@ -228,6 +228,15 @@ def send_reply():
     body = request.form.get('body')
     filename = request.form.get('filename')
 
+    print(f"Sending mail to {to_address} with subject '{subject}'")
+
+    return '''
+        <script>
+          alert("Mail wurde erfolgreich verschickt!");
+          window.location.href = "/index.html";
+        </script>
+    '''
+
     if not reply_to or not alias or not subject or not filename:
         flash("Missing required fields.", "error")
         # Wenn filename fehlt, redirect fallback auf Inbox ohne Datei
