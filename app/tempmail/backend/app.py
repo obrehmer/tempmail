@@ -228,56 +228,16 @@ def send_reply():
     body = request.form.get('body')
     filename = request.form.get('filename')
 
-    print(f"Sending mail to {reply_to} with subject '{subject}'")
-
-    return '''
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Mail verschickt</title>
-        <script>
-            // Lade index.html im Hintergrund
-            setTimeout(function() {
-                window.location.href = "/index.html";
-            }, 100); // ganz kurz warten
-
-            function closeWindow() {
-                window.close(); // funktioniert nur bei Fenstern, die via JS geöffnet wurden
-            }
-        </script>
-        <style>
-            body {
-                font-family: sans-serif;
-                text-align: center;
-                padding-top: 50px;
-            }
-            button {
-                padding: 10px 20px;
-                font-size: 16px;
-                border: none;
-                background: #3498db;
-                color: white;
-                border-radius: 6px;
-                cursor: pointer;
-            }
-        </style>
-    </head>
-    <body>
-        <h2>Mail wurde erfolgreich verschickt!</h2>
-        <button onclick="closeWindow()">Schließen</button>
-    </body>
-    </html>
-    '''
-
+    # Prüfe, ob alle notwendigen Felder vorhanden sind
     if not reply_to or not alias or not subject or not filename:
         flash("Missing required fields.", "error")
-        # Wenn filename fehlt, redirect fallback auf Inbox ohne Datei
         if filename:
             return redirect(url_for('view_email', email_id=alias, filename=filename))
         else:
             return redirect(url_for('index'))
 
     try:
+        # Baue und sende die E-Mail
         msg = EmailMessage()
         msg['From'] = f"{alias}@inboxcl.xyz"
         msg['To'] = reply_to
@@ -287,11 +247,52 @@ def send_reply():
         with smtplib.SMTP('localhost') as smtp:
             smtp.send_message(msg)
 
-        flash("Reply sent successfully.", "success")
-    except Exception as e:
-        flash(f"Failed to send reply: {str(e)}", "error")
+        print(f"✅ Reply sent to {reply_to} with subject '{subject}'")
 
-    return redirect(url_for('view_email', email_id=alias, filename=filename))
+        # Wenn erfolgreich: HTML-Fenster mit "Mail gesendet"-Hinweis anzeigen
+        return '''
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Mail verschickt</title>
+            <script>
+                // Lade index.html im Hintergrund automatisch
+                setTimeout(function() {
+                    window.location.href = "/index.html";
+                }, 100);
+
+                function closeWindow() {
+                    window.close(); // Funktioniert nur bei per JS geöffnetem Fenster
+                }
+            </script>
+            <style>
+                body {
+                    font-family: sans-serif;
+                    text-align: center;
+                    padding-top: 50px;
+                }
+                button {
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    border: none;
+                    background: #3498db;
+                    color: white;
+                    border-radius: 6px;
+                    cursor: pointer;
+                }
+            </style>
+        </head>
+        <body>
+            <h2>Mail wurde erfolgreich verschickt!</h2>
+            <button onclick="closeWindow()">Schließen</button>
+        </body>
+        </html>
+        '''
+
+    except Exception as e:
+        print(f"❌ Fehler beim Senden: {e}")
+        flash(f"Fehler beim Senden: {str(e)}", "error")
+        return redirect(url_for('view_email', email_id=alias, filename=filename))
 
 if __name__ == '__main__':
     ensure_stats_file()
