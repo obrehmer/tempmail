@@ -105,16 +105,6 @@
         comment: Allow HTTP (port 80) from Cloudflare only
       loop: "{{ cloudflare_sources }}"
 
-#    - name: Block outgoing SMTP traffic
-#      iptables:
-##        chain: OUTPUT
-#        protocol: tcp
-#        destination_port: "{{ smtp }}"
-#        jump: REJECT
-#        action: insert
-#        rule_num: 1
-#        comment: Prevent sending emails
-
     - name: Allow incoming traffic from localhost
       iptables:
         chain: INPUT
@@ -135,9 +125,27 @@
         chain: INPUT
         policy: DROP
 
-    - name: Save iptables rules (IPv4)
-      shell: iptables-save > /etc/iptables/rules.v4
-
+    - name: Get current saved iptables rules
+      slurp:
+        src: /etc/iptables/rules.v4
+      register: saved_rules
+      ignore_errors: true 
+    
+    - name: Get current iptables rules from system
+      command: iptables-save
+      register: current_rules
+    
+    - name: Save iptables rules if changed
+      copy:
+        content: "{{ current_rules.stdout }}"
+        dest: /etc/iptables/rules.v4
+        owner: root
+        group: root
+        mode: '0644'
+      when: saved_rules is not failed
+      diff: true
+    
+    
     # Directory Setup
     - name: Create directory for email data (mails)
       file:
@@ -405,7 +413,6 @@
       notify: Restart Postfix
 
 
-    # Optional: completely suppress Postfix logs via rsyslog
     - name: Disable Postfix logging in rsyslog (optional)
       copy:
         dest: /etc/rsyslog.d/30-postfix-anon.conf
@@ -453,7 +460,7 @@
         name: "Tempmail Cleanup"
         user: root
         minute: "0"
-        hour: "4"
+        hour: "*/2"
         job: "/usr/bin/find /var/tempmail/mails/ -mtime +1 -exec rm -fr {} \\; > /dev/null 2>&1"
         state: present
 
@@ -506,5 +513,4 @@
       service:
         name: rsyslog
         state: restarted
-
 
