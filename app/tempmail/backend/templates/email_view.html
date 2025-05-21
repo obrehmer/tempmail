@@ -25,7 +25,13 @@
       <p><strong>From:</strong> {{ mail.from }}</p>
       <p><strong>To:</strong> {{ alias }}@inboxcl.xyz</p>
       <hr />
-      <pre>{{ mail.body }}</pre>
+      {% if mail.body.startswith("<") %}
+        <div class="html-email-body" style="border:1px solid #ccc; padding:1em;">
+          {{ mail.body | safe }}
+        </div>
+      {% else %}
+        <pre>{{ mail.body }}</pre>
+      {% endif %}
     </section>
 
 <section class="reply-section">
