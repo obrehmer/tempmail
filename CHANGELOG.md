@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 
 ---
+
+## [v1.7.2] - 2025-05-21
+
+### Changed
+
+- Some fixes and optimizations in ansible`s install.yaml
+- email view in email_view.html changed to HTML
+
 ## [v1.7.0] - 2025-05-20
 
 ### Added
