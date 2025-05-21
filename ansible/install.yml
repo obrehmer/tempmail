@@ -167,7 +167,6 @@
       file:
         path: /var/www/tempmail
         state: directory
-        recurse: yes
         owner: www-data
         group: www-data
         mode: '0750'
