@@ -66,17 +66,23 @@
           TERM=xterm
           export TERM
 
-    - name: Update and upgrade apt packages
-      apt:
-        upgrade: yes
-        update_cache: yes
-        cache_valid_time: 86400
-
-    - name: Install required packages
+    - name: Update cache and install packages async
       apt:
         name: "{{ packages }}"
         state: present
-
+        update_cache: yes
+      async: 300
+      poll: 0
+      register: apt_job
+ 
+    - name: Wait for apt to finish
+      async_status:
+        jid: "{{ apt_job.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 10
+      delay: 15
+     
     # Firewall Configuration
     - name: Define allowed ports
       set_fact:
@@ -147,30 +153,23 @@
     
     
     # Directory Setup
-    - name: Create directory for email data (mails)
+    - name: Create required directories for tempmail
       file:
-        path: /var/tempmail/mails
+        path: "{{ item }}"
         state: directory
         owner: www-data
         group: www-data
         mode: '0750'
-
-    - name: Create directory for email data (misc)
-      file:
-        path: /var/tempmail/misc
-        state: directory
-        owner: www-data
-        group: www-data
-        mode: '0750'
-
-    - name: Create directory for web application
-      file:
-        path: /var/www/tempmail
-        state: directory
-        owner: www-data
-        group: www-data
-        mode: '0750'
-
+      loop:
+        - /var/tempmail/mails
+        - /var/tempmail/misc
+        - /var/www/tempmail
+    
+    - name: Check if stats.json exists
+      stat:
+        path: /var/tempmail/misc/stats.json
+      register: stats_file
+    
     - name: Create empty stats.json if it does not exist
       copy:
         dest: /var/tempmail/misc/stats.json
@@ -178,8 +177,13 @@
         owner: www-data
         group: www-data
         mode: '0644'
-        force: no
-
+      when: not stats_file.stat.exists
+    
+    - name: Check if active_aliases.json exists
+      stat:
+        path: /var/tempmail/misc/active_aliases.json
+      register: aliases_file
+    
     - name: Create empty active_aliases.json if it does not exist
       copy:
         dest: /var/tempmail/misc/active_aliases.json
@@ -187,9 +191,9 @@
         owner: www-data
         group: www-data
         mode: '0644'
-        force: no
-
-
+      when: not aliases_file.stat.exists
+    
+    
     # Apache Configuration
     - name: Write Apache VirtualHost configuration for tempmail
       copy:
