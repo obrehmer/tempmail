@@ -204,7 +204,7 @@
               ServerName {{ server_name }}
 
               ErrorLog /dev/null
-              CustomLog /var/log/xxx.log combined
+              CustomLog /dev/null combined
 
               RewriteEngine on
               RewriteCond %{REQUEST_URI} ^/$
