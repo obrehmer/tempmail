@@ -24,6 +24,7 @@
       - apache2-utils
       - python3-passlib
       - opendkim
+      - libapache2-mod-security2
     key_file: authorized_keys.vault
     cloudflare: true
     cloudflare_sources:
@@ -75,6 +76,11 @@
       async: 300
       poll: 0
       register: apt_job
+      tags:
+        - apache
+        - modsecurity
+        - install
+      notify: Reload Apache
  
     - name: Wait for apt to finish
       async_status:
@@ -235,7 +241,7 @@
         line: '    ErrorLog /dev/null'
         insertafter: '^<VirtualHost.*>'
         state: present
-      notify: Reload apache
+      notify: Reload Apache
     
     - name: Set Apache CustomLog to /dev/null
       lineinfile:
@@ -244,7 +250,7 @@
         line: '    CustomLog /dev/null combined'
         insertafter: '^<VirtualHost.*>'
         state: present
-      notify: Reload apache
+      notify: Reload Apache
     
    
     
@@ -476,9 +482,110 @@
         hour: "*"
         job: "/usr/bin/python3 /var/www/tempmail/backend/update_rejects.py > /dev/null 2>&1"
         state: present
-
-
-
+    
+    - name: Install Apache, ModSecurity2 and Git
+      apt:
+        name:
+          - apache2
+          - libapache2-mod-security2
+          - git
+        state: present
+        update_cache: yes
+      notify: Reload Apache
+      tags:
+        - apache
+        - modsecurity
+        - install
+    
+    - name: Ensure security2 module is enabled
+      command: a2enmod security2
+      args:
+        creates: /etc/apache2/mods-enabled/security2.load
+      notify: Reload Apache
+      tags:
+        - apache
+        - modsecurity
+        - enable-module
+    
+    - name: Copy recommended modsecurity.conf
+      copy:
+        src: /etc/modsecurity/modsecurity.conf-recommended
+        dest: /etc/modsecurity/modsecurity.conf
+        remote_src: yes
+        force: yes
+      notify: Reload Apache
+      tags:
+        - modsecurity
+        - config
+    
+    - name: Set SecRuleEngine to On
+      lineinfile:
+        path: /etc/modsecurity/modsecurity.conf
+        regexp: '^SecRuleEngine\s+.*'
+        line: 'SecRuleEngine On'
+      notify: Reload Apache
+      tags:
+        - modsecurity
+        - config
+        - securule
+    
+    - name: Clone OWASP CRS
+      git:
+        repo: https://github.com/coreruleset/coreruleset.git
+        dest: /etc/modsecurity/coreruleset
+        version: v4.0.0
+      notify: Reload Apache
+      tags:
+        - modsecurity
+        - owasp
+        - crs
+        - install
+    
+    - name: Copy CRS setup.conf
+      copy:
+        src: /etc/modsecurity/coreruleset/crs-setup.conf.example
+        dest: /etc/modsecurity/coreruleset/crs-setup.conf
+        remote_src: yes
+        force: yes
+      notify: Reload Apache
+      tags:
+        - modsecurity
+        - owasp
+        - crs
+        - config
+    
+    - name: Ensure Apache ModSecurity config includes only CRS includes
+      copy:
+        dest: /etc/apache2/mods-enabled/security2.conf
+        content: |
+          <IfModule security2_module>
+            IncludeOptional /etc/modsecurity/modsecurity.conf
+            IncludeOptional /etc/modsecurity/coreruleset/crs-setup.conf
+            IncludeOptional /etc/modsecurity/coreruleset/rules/*.conf
+          </IfModule>
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload Apache
+      tags:
+        - apache
+        - modsecurity
+        - owasp
+        - config
+     
+    - name: Ensure ModSecurity audit log directory exists
+      file:
+        path: /var/log/modsecurity
+        state: directory
+        owner: root
+        group: adm
+        mode: '0755'
+      tags:
+        - modsecurity
+        - logging
+        - audit
+    
+    
   handlers:
 
     - name: Reload systemd daemon
@@ -490,7 +597,7 @@
         name: apache2
         state: restarted
 
-    - name: Reload apache
+    - name: Reload Apache
       service:
         name: apache2
         state: reloaded
