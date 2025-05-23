@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 ---
+## [v1.8.0] - 2025-05-25
+
+### Added
+
+ - modsecurity added and enabled in apache2
+ - all changes in ansible install.yaml
 
 ## [v1.7.2] - 2025-05-21
 
