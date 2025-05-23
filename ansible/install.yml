@@ -3,6 +3,7 @@
   hosts: all
   become: yes
   gather_facts: false
+  strategy: free
 
   vars:
     web: 80
@@ -203,7 +204,7 @@
               ServerName {{ server_name }}
 
               ErrorLog /dev/null
-              CustomLog /dev/null combined
+              CustomLog /var/log/xxx.log combined
 
               RewriteEngine on
               RewriteCond %{REQUEST_URI} ^/$
