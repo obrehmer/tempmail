@@ -9,11 +9,12 @@ TempMail is a disposable, temporary email inbox service designed for spam protec
 ## Features
 
 - Temporary email addresses valid for **5 minutes** by default  
+- Replying to emails is supported, but only as a direct response to incoming messages.
 - Manual **"Reload" button** to instantly generate a new email alias, invalidating the old one  
 - Expired aliases are automatically **blacklisted in Postfix** to prevent reuse  
 - **No outgoing mail** — receive-only service  
 - Real-time inbox updates via **WebSocket**  
-- Retro MacOS-style frontend with user-friendly UI, including:  
+- Retro frontend with user-friendly UI, including:  
   - **Copy to Clipboard** button for email addresses  
   - **Reload** button to generate new aliases instantly  
 - Stats view protected with **HTTP Basic Auth**  
@@ -21,6 +22,8 @@ TempMail is a disposable, temporary email inbox service designed for spam protec
 - Ansible-managed configuration for Apache and Postfix, including:  
   - **Anonymized logging** for enhanced privacy  
   - Apache logs redirected to `/dev/null` for minimal data retention  
+- ModSecurity 2 is enabled as a Web Application Firewall (WAF) to secure the service against common web attacks.
+
 
 ---
 
@@ -32,16 +35,6 @@ TempMail is a disposable, temporary email inbox service designed for spam protec
 - Recommended: Cloudflare for DNS management and SSL termination  
 - Ansible installed locally for deployment  
 - Public IP and domain name properly configured  
-
----
-
-## Installation
-
-### 1. Clone this Repository
-
-```bash
-git clone https://github.com/obrehmer/tempmail.git
-cd tempmail/ansible
 
 ---
 
