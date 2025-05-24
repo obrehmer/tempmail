@@ -506,13 +506,23 @@
         - apache
         - modsecurity
         - enable-module
+
+    - name: Check if modsecurity.conf exists
+      stat:
+        path: /etc/modsecurity/modsecurity.conf
+      register: modsec_conf
+      tags:
+        - modsecurity
+        - config
+
     
-    - name: Copy recommended modsecurity.conf
+    - name: Copy recommended modsecurity.conf if does not exist
       copy:
         src: /etc/modsecurity/modsecurity.conf-recommended
         dest: /etc/modsecurity/modsecurity.conf
         remote_src: yes
-        force: yes
+        force: no
+      when: not modsec_conf.stat.exists
       notify: Reload Apache
       tags:
         - modsecurity
@@ -585,7 +595,33 @@
         - logging
         - audit
     
+    - name: Set ModSecurity to log only essential parts
+      ansible.builtin.lineinfile:
+        path: /etc/modsecurity/modsecurity.conf
+        regexp: '^SecAuditLogParts'
+        line: 'SecAuditLogParts ABIFHZ'
+        state: present
+      notify: Reload Apache
+      tags:
+        - apache
+        - modsecurity
+        - logging
+
     
+    - name: Replace SecAuditLogRelevantStatus with simplified pattern
+      ansible.builtin.lineinfile:
+        path: /etc/modsecurity/modsecurity.conf
+        regexp: '^SecAuditLogRelevantStatus'
+        line: 'SecAuditLogRelevantStatus "^5|^4"'
+        state: present
+        backrefs: false
+      notify: Reload Apache
+      tags:
+        - apache
+        - modsecurity
+        - logging
+        - config
+
   handlers:
 
     - name: Reload systemd daemon
