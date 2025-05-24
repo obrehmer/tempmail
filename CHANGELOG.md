@@ -3,7 +3,18 @@
 All notable changes to this project will be documented in this file.
 
 ---
-## [v1.8.0] - 2025-05-25
+## [v1.8.1] - 2025-05-24
+
+### Changed
+
+ - modsecurity logging reduced
+ 
+### Added
+
+ - custom error page for 403 Forbidden added
+
+
+## [v1.8.0] - 2025-05-23
 
 ### Added
 
