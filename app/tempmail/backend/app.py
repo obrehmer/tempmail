@@ -215,6 +215,9 @@ def not_found_error(error):
 def forbidden_error(error):
     return render_template('403.html'), 403
 
+@app.route("/forbidden")
+def forbidden_error_page():
+    return render_template("403.html"), 403
 
 @app.errorhandler(500)
 def internal_error(error):

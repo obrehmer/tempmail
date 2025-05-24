@@ -211,6 +211,7 @@
 
               ErrorLog /dev/null
               CustomLog /dev/null combined
+              ErrorDocument 403 /forbidden
 
               RewriteEngine on
               RewriteCond %{REQUEST_URI} ^/$
