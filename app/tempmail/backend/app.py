@@ -316,12 +316,23 @@ def send_reply():
         flash(f"Fehler beim Senden: {str(e)}", "error")
         return redirect(url_for('view_email', email_id=alias, filename=filename))
 
+import re
+
+def sanitize_header(value):
+    # Entfernt potenziell gefährliche Zeichen in Headern
+    return re.sub(r'[\r\n]+', '', value.strip())
+
 @app.route('/forward/<mail_id>', methods=['POST'])
 def forward_mail(mail_id):
     target_email = request.form.get('target_email')
 
     if not target_email:
         flash("No destination email provided.", "error")
+        return redirect(url_for('index'))
+
+    # Einfache E-Mail-Formatprüfung
+    if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", target_email):
+        flash("Invalid email address format.", "error")
         return redirect(url_for('index'))
 
     inbox_dir = os.path.join(EMAIL_DIR, mail_id)
@@ -341,9 +352,9 @@ def forward_mail(mail_id):
             mail = json.load(f)
 
         msg = EmailMessage()
-        msg['From'] = f"{mail_id}@inboxcl.xyz"
-        msg['To'] = target_email
-        msg['Subject'] = "[FWD] " + mail.get("subject", "(No subject)")
+        msg['From'] = sanitize_header(f"{mail_id}@inboxcl.xyz")
+        msg['To'] = sanitize_header(target_email)
+        msg['Subject'] = sanitize_header("[FWD] " + mail.get("subject", "(No subject)"))
 
         if mail.get("body", "").startswith("<"):
             msg.set_content("HTML message forwarded, open in HTML view.")
