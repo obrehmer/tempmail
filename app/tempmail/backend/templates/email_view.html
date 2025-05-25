@@ -35,22 +35,6 @@
     </section>
 
 
-    <!-- Forwarding light section -->
-    <section class="forward-section" style="margin-top: 2em;">
-      <h3>Forward this message</h3>
-      <form method="POST" action="{{ url_for('forward_mail', mail_id=mail.id) }}" class="forward-form">
-        <label for="target_email">Forward to your real email (one-time):</label>
-        <input type="email" id="target_email" name="target_email" placeholder="your@email.com" required style="width: 100%; margin-bottom: 1em;" />
-
-        <p style="font-size: 0.9em; color: #555;">
-          This will send the message once and remove this temporary address afterwards for your privacy.
-        </p>
-
-        <button type="submit" class="btn btn-warning" style="margin-bottom: 1em;">Forward & Delete Address</button>
-      </form>
-    </section>
-
-
 <section class="reply-section">
   <h3>Reply to this message</h3>
   <form method="POST" action="{{ url_for('send_reply') }}" class="reply-form">
