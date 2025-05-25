@@ -34,7 +34,7 @@
       {% endif %}
     </section>
 
-
+{% if not is_welcome %}
 <section class="reply-section">
   <h3>Reply to this message</h3>
   <form method="POST" action="{{ url_for('send_reply') }}" class="reply-form">
@@ -60,6 +60,7 @@
     <p style="font-size: 0.9em; color: #666;">After forwarding, this temporary inbox will be deleted.</p>
   </form>
 </section>
+{% endif %}
 
 <div class="navigation" style="margin-top: 1em;">
   <a href="{{ url_for('index') }}">&larr; Back to inbox</a>

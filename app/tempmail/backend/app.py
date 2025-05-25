@@ -154,7 +154,10 @@ def index():
                            remaining_seconds=remaining_seconds)
 
 @app.route('/email/<email_id>/<filename>')
-def view_email(email_id, filename):
+    def view_email(email_id, filename):
+    is_welcome = (mail.get("subject") == "Welcome to tempmail.olifani.eu")
+    return render_template("email_view.html", mail=mail, alias=email_id, filename=filename, is_welcome=is_welcome)
+
     inbox_dir = os.path.join(EMAIL_DIR, email_id)
     file_path = os.path.join(inbox_dir, filename)
 
