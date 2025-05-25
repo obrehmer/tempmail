@@ -22,6 +22,78 @@
   <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="/static/css/retro-mac.css" />
   <link rel="stylesheet" href="/static/css/modern-retro.css" />
+  
+  <style>
+    /* Responsive Navigation Styles */
+    nav.site-nav {
+      background-color: #222;
+      border-radius: 6px;
+      margin-bottom: 1em;
+      font-weight: bold;
+      font-family: 'Courier New', Courier, monospace;
+      position: relative;
+      z-index: 10;
+    }
+
+    nav.site-nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      gap: 2em;
+    }
+
+    nav.site-nav a {
+      color: #eee;
+      text-decoration: none;
+      padding: 0.75em 1em;
+      display: block;
+      transition: background-color 0.3s, color 0.3s;
+      border-radius: 4px;
+    }
+
+    nav.site-nav a:hover,
+    nav.site-nav a:focus {
+      background-color: #444;
+      color: #ffd700;
+      outline: none;
+    }
+
+    /* Hamburger menu button */
+    nav.site-nav .menu-toggle {
+      display: none;
+      position: absolute;
+      right: 1em;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #eee;
+      font-size: 1.8rem;
+      user-select: none;
+    }
+
+    /* Hide menu on small screens */
+    @media (max-width: 600px) {
+      nav.site-nav ul {
+        flex-direction: column;
+        display: none;
+        background-color: #222;
+        border-radius: 0 0 6px 6px;
+        margin-top: 0;
+      }
+
+      nav.site-nav ul.show {
+        display: flex;
+      }
+
+      nav.site-nav .menu-toggle {
+        display: block;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -38,12 +110,24 @@
   <p>Disposable email address. Anonymous. Auto-expires.</p>
 </header>
 
+<nav class="site-nav" aria-label="Primary navigation">
+  <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false" aria-label="Toggle menu">
+    ☰
+  </button>
+  <ul id="primary-menu">
+    <li><a href="/index.html">Home</a></li>
+    <li><a href="/faq">FAQ</a></li>
+    <li><a href="/why-temp-email.html">Why Temp Email?</a></li>
+    <li><a href="https://github.com/obrehmer/tempmail" target="_blank" rel="noopener">Source & Changelog</a></li>
+  </ul>
+</nav>
+
 <main class="main-content">
   <section class="email-info">
-<p>
-  <strong>Private, temporary email address</strong> — with reply support.
-  Valid for 5 minutes. All messages are auto-deleted.  
-</p>
+    <p>
+      <strong>Private, temporary email address</strong> — with reply support.
+      Valid for 5 minutes. All messages are auto-deleted.  
+    </p>
   </section>
 
   <section class="email-display-box">
@@ -94,6 +178,14 @@
       setTimeout(() => btn.innerText = 'Copy', 1500);
     });
   }
+
+  // Toggle navigation menu on small screens
+  document.querySelector('.menu-toggle').addEventListener('click', function() {
+    const menu = document.getElementById('primary-menu');
+    const expanded = this.getAttribute('aria-expanded') === 'true' || false;
+    this.setAttribute('aria-expanded', !expanded);
+    menu.classList.toggle('show');
+  });
 </script>
 <script src="/static/js/timer.js"></script>
 </body>
