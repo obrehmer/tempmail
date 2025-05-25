@@ -29,7 +29,7 @@ TempMail is a disposable, temporary email inbox service designed for spam protec
 
 ## Requirements
 
-- Ubuntu 24.04 LTS server  
+- Ubuntu (>=24.04) Operating System
 - DNS A record pointing to your server  
 - MX record configured to receive emails on the chosen domain  
 - Recommended: Cloudflare for DNS management and SSL termination  

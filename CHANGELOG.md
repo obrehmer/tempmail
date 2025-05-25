@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 
 ---
+
+## [v1.8.2] - 2025-05-25
+
+### Added
+- ✉️ **Mail Forwarding (light):**
+  Users can now optionally forward a received email to their own address.
+  Ideal for quick mobile access. The temporary address is automatically deleted after forwarding.
+
 ## [v1.8.1] - 2025-05-24
 
 ### Changed
