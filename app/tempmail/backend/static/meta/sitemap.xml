@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+  <loc>https://olifani.eu/</loc>
+  <lastmod>2025-05-25</lastmod>
+</url>
+<url>
+  <loc>https://tempmail.olifani.eu/</loc>
+  <lastmod>2025-05-25</lastmod>
+</url>
+<url>
   <loc>https://tempmail.olifani.eu/index.html</loc>
   <lastmod>2025-05-25</lastmod>
 </url>
