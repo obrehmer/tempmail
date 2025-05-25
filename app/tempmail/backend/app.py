@@ -154,27 +154,35 @@ def index():
                            remaining_seconds=remaining_seconds)
 
 @app.route('/email/<email_id>/<filename>')
-    def view_email(email_id, filename):
-    is_welcome = (mail.get("subject") == "Welcome to tempmail.olifani.eu")
-    return render_template("email_view.html", mail=mail, alias=email_id, filename=filename, is_welcome=is_welcome)
-
+def view_email(email_id, filename):
     inbox_dir = os.path.join(EMAIL_DIR, email_id)
     file_path = os.path.join(inbox_dir, filename)
 
     if not os.path.exists(file_path):
         abort(404)
 
-    with open(file_path) as f:
-        mail = json.load(f)
+    mail = {}
+    try:
+        with open(file_path) as f:
+            mail = json.load(f)
+    except Exception as e:
+        print(f"Fehler beim Laden der Mail-Datei: {e}")
+        mail = {}
 
-    # Stelle sicher, dass alle erwarteten Felder vorhanden sind
+    # Sicherstellen, dass alle erwarteten Felder vorhanden sind
     mail.setdefault("from", "Unknown sender")
     mail.setdefault("to", f"{email_id}@inboxcl.xyz")
     mail.setdefault("subject", "(No subject)")
     mail.setdefault("date", "Unknown date")
     mail.setdefault("body", "[No content]")
 
-    return render_template("email_view.html", mail=mail, alias=email_id, filename=filename)
+    is_welcome = (mail.get("subject") == "Welcome to tempmail.olifani.eu")
+
+    return render_template("email_view.html",
+                           mail=mail,
+                           alias=email_id,
+                           filename=filename,
+                           is_welcome=is_welcome)
 
 @app.route('/delete_emails/<email_id>')
 def delete_emails(email_id):
