@@ -9,7 +9,7 @@ TempMail is a disposable, temporary email inbox service designed for spam protec
 ## Features
 
 - Temporary email addresses valid for **5 minutes** by default  
-- Replying to emails is supported, but only as a direct response to incoming messages.
+- Replying and forwarding to emails is supported, but only as a direct response to incoming messages.
 - Manual **"Reload" button** to instantly generate a new email alias, invalidating the old one  
 - Expired aliases are automatically **blacklisted in Postfix** to prevent reuse  
 - **No outgoing mail** — receive-only service  
