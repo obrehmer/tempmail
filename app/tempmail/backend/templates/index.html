@@ -23,87 +23,8 @@
   <link rel="stylesheet" href="/static/css/retro-mac.css" />
   <link rel="stylesheet" href="/static/css/modern-retro.css" />
   
-  <style>
-    /* Responsive Navigation Styles */
-    nav.site-nav {
-      background-color: #222;
-      border-radius: 6px;
-      margin-bottom: 1em;
-      font-weight: bold;
-      font-family: 'Courier New', Courier, monospace;
-      position: relative;
-      z-index: 10;
-    }
-
-    nav.site-nav ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      gap: 2em;
-    }
-
-    nav.site-nav a {
-      color: #eee;
-      text-decoration: none;
-      padding: 0.75em 1em;
-      display: block;
-      transition: background-color 0.3s, color 0.3s;
-      border-radius: 4px;
-    }
-
-    nav.site-nav a:hover,
-    nav.site-nav a:focus {
-      background-color: #444;
-      color: #ffd700;
-      outline: none;
-    }
-
-    /* Hamburger menu button */
-    nav.site-nav .menu-toggle {
-      display: none;
-      position: absolute;
-      right: 1em;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #eee;
-      font-size: 1.8rem;
-      user-select: none;
-    }
-
-    /* Hide menu on small screens */
-    @media (max-width: 600px) {
-      nav.site-nav ul {
-        flex-direction: column;
-        display: none;
-        background-color: #222;
-        border-radius: 0 0 6px 6px;
-        margin-top: 0;
-      }
-
-      nav.site-nav ul.show {
-        display: flex;
-      }
-
-      nav.site-nav .menu-toggle {
-        display: block;
-      }
-    }
-  </style>
 </head>
 <body>
-
-<div id="ai-banner">
-  <p>
-    ✨ Looking for smart tools? Check out our <a href="https://ai.olifani.eu/" target="_blank">AI Tools</a> —
-    or learn more about <a href="/temporary-email.html">Temporary Email</a> and <a href="/why-temp-email.html">why it matters</a>.
-  </p>
-  <button id="close-banner" onclick="document.getElementById('ai-banner').style.display='none'">✕</button>
-</div>
 
 <header class="site-header">
   <h1>5-minute mail</h1>
