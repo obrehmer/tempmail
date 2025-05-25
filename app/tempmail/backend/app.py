@@ -316,6 +316,67 @@ def send_reply():
         flash(f"Fehler beim Senden: {str(e)}", "error")
         return redirect(url_for('view_email', email_id=alias, filename=filename))
 
+@app.route('/forward/<mail_id>', methods=['POST'])
+def forward_mail(mail_id):
+    target_email = request.form.get('target_email')
+
+    if not target_email:
+        flash("No destination email provided.", "error")
+        return redirect(url_for('index'))
+
+    inbox_dir = os.path.join(EMAIL_DIR, mail_id)
+    mail_file = None
+
+    if os.path.exists(inbox_dir):
+        files = sorted(os.listdir(inbox_dir), reverse=True)
+        if files:
+            mail_file = os.path.join(inbox_dir, files[0])
+
+    if not mail_file or not os.path.exists(mail_file):
+        flash("No email to forward.", "error")
+        return redirect(url_for('index'))
+
+    try:
+        with open(mail_file, 'r') as f:
+            mail = json.load(f)
+
+        msg = EmailMessage()
+        msg['From'] = f"{mail_id}@inboxcl.xyz"
+        msg['To'] = target_email
+        msg['Subject'] = "[FWD] " + mail.get("subject", "(No subject)")
+
+        if mail.get("body", "").startswith("<"):
+            msg.set_content("HTML message forwarded, open in HTML view.")
+            msg.add_alternative(mail["body"], subtype='html')
+        else:
+            msg.set_content(mail["body"])
+
+        with smtplib.SMTP('localhost') as smtp:
+            smtp.send_message(msg)
+
+        for fname in os.listdir(inbox_dir):
+            os.remove(os.path.join(inbox_dir, fname))
+        session.clear()
+
+        return '''
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Forwarded</title>
+        <script>
+        setTimeout(function(){ window.location.href = "/index.html"; }, 2000);
+        </script></head>
+        <body style="font-family: sans-serif; text-align: center; padding: 2em;">
+        <h2>Mail forwarded successfully.</h2>
+        <p>This temporary address has been deleted.</p>
+        </body></html>
+        '''
+
+    except Exception as e:
+        print(f"❌ Fehler beim Weiterleiten: {e}")
+        flash(f"Forwarding failed: {str(e)}", "error")
+        return redirect(url_for('index'))
+
+
 if __name__ == '__main__':
     ensure_stats_file()
     socketio.run(app, host='0.0.0.0', port=5000, debug=False)
