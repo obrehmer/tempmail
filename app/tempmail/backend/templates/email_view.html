@@ -67,6 +67,15 @@
     <button type="submit" class="btn btn-primary" style="margin-bottom: 1em;">Send Reply</button>
   </form>
 </section>
+<section class="forward-section" style="margin-top: 2em;">
+  <h3>Forward this email</h3>
+  <form method="POST" action="/forward/{{ alias }}">
+    <label for="target_email">Forward to:</label>
+    <input type="email" name="target_email" id="target_email" required placeholder="your@email.com" style="width: 100%; margin: 0.5em 0;" />
+    <button type="submit" class="btn btn-secondary">Forward and Delete</button>
+    <p style="font-size: 0.9em; color: #666;">After forwarding, this temporary inbox will be deleted.</p>
+  </form>
+</section>
 
 <div class="navigation" style="margin-top: 1em;">
   <a href="{{ url_for('index') }}">&larr; Back to inbox</a>
