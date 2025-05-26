@@ -1,0 +1,110 @@
+---
+- name: Install OpenDKIM
+  apt:
+    name: opendkim
+    state: present
+    update_cache: yes
+
+- name: Install OpenDKIM tools
+  apt:
+    name: opendkim-tools
+    state: present
+
+- name: Create OpenDKIM config directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: opendkim
+    group: opendkim
+    mode: '0755'
+  loop:
+    - /etc/opendkim
+    - /etc/opendkim/keys
+
+- name: Ensure required OpenDKIM settings are present in /etc/opendkim.conf
+  lineinfile:
+    path: /etc/opendkim.conf
+    regexp: '^{{ item.key }}\s+'
+    line: "{{ item.key }} {{ item.value }}"
+    state: present
+    backrefs: yes
+  loop:
+    - { key: 'Mode', value: 's' }
+    - { key: 'InternalHosts', value: 'refile:/etc/opendkim/TrustedHosts' }
+    - { key: 'ExternalIgnoreList', value: 'refile:/etc/opendkim/TrustedHosts' }
+    - { key: 'KeyTable', value: 'refile:/etc/opendkim/KeyTable' }
+    - { key: 'SigningTable', value: 'refile:/etc/opendkim/SigningTable' }
+    - { key: 'Socket', value: 'local:/var/spool/postfix/opendkim/opendkim.sock' }
+  notify: Restart OpenDKIM
+
+- name: Ensure KeyTable file exists with correct content
+  copy:
+    dest: /etc/opendkim/KeyTable
+    content: |
+      mydkimkey._domainkey.{{ postfix_virtual_alias_domains }} {{ postfix_virtual_alias_domains }}:mydkimkey:/etc/opendkim/keys/mydkimkey.private
+    owner: opendkim
+    group: opendkim
+    mode: '0640'
+  notify: Restart OpenDKIM
+
+- name: Ensure /etc/opendkim/SigningTable exists with correct content
+  copy:
+    dest: /etc/opendkim/SigningTable
+    content: |
+      *@{{ postfix_virtual_alias_domains }} mydkimkey._domainkey.{{ postfix_virtual_alias_domains }}
+    owner: opendkim
+    group: opendkim
+    mode: '0640'
+  notify: Restart OpenDKIM
+
+- name: Ensure /etc/opendkim/TrustedHosts exists with local entries
+  copy:
+    dest: /etc/opendkim/TrustedHosts
+    content: |
+      127.0.0.1
+      localhost
+    owner: opendkim
+    group: opendkim
+    mode: '0644'
+  notify: Restart OpenDKIM
+
+- name: Ensure DKIM private key exists
+  copy:
+    src: mydkimkey.private.vault
+    dest: /etc/opendkim/keys/mydkimkey.private
+    owner: opendkim
+    group: root
+    mode: '0640'
+  notify: Restart OpenDKIM
+
+
+- name: Ensure Postfix main.cf contains OpenDKIM milter config
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^smtpd_milters\s*='
+    line: 'smtpd_milters = local:opendkim/opendkim.sock'
+    state: present
+  notify: Restart Postfix
+
+- name: Ensure Postfix main.cf contains OpenDKIM non_smtpd_milters config
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^non_smtpd_milters\s*='
+    line: 'non_smtpd_milters = $smtpd_milters'
+    state: present
+  notify: Restart Postfix
+
+- name: Ensure Postfix main.cf contains OpenDKIM milter_default_action config
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^milter_default_action\s*='
+    line: 'milter_default_action = accept'
+    state: present
+  notify: Restart Postfix
+
+- name: Start OpenDKIM and enable
+  service:
+    name: opendkim
+    state: started
+    enabled: true
+

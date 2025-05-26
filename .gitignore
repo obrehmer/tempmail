@@ -1,5 +1,0 @@
-ansible/authorized_keys.vault
-ansible/vault_htpasswd_password.vault
-ansible/opendkim.yml
-ansible/mydkimkey.private.vault
-ansible/mydkimkey.txt.vault
