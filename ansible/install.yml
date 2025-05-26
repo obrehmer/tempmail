@@ -23,7 +23,6 @@
       - apache2
       - apache2-utils
       - python3-passlib
-      - opendkim
       - libapache2-mod-security2
     key_file: authorized_keys.vault
     cloudflare: true
@@ -623,6 +622,17 @@
         - logging
         - config
 
+    - name: Check if opendkim.yml exists on controller
+      stat:
+        path: ./opendkim.yml
+      register: opendkim_file
+      delegate_to: localhost
+      run_once: true
+
+    - name: Include opendkim tasks if present
+      import_tasks: opendkim.yml
+      when: opendkim_file.stat.exists
+
   handlers:
 
     - name: Reload systemd daemon
@@ -661,4 +671,10 @@
       service:
         name: rsyslog
         state: restarted
+
+    - name: Restart OpenDKIM
+      service:
+        name: opendkim
+        state: restarted
+
 
