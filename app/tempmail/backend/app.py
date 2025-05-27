@@ -27,7 +27,6 @@ except Exception as e:
     GA_API_SECRET = None
 
 app = Flask(__name__)
-CORS(app)
 socketio = SocketIO(app)
 
 with open("/var/tempmail/misc/app.secret.json") as f:
