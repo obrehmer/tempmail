@@ -9,6 +9,8 @@ import random
 import string
 import smtplib
 import pwd
+import requests
+import hashlib
 
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -37,38 +39,32 @@ TARGET_USER = "www-data"
 STATS_FILE = "/var/tempmail/misc/stats.json"
 ACTIVE_ALIASES_FILE = "/var/tempmail/misc/active_aliases.json"
 
-def send_ga4_pageview(req, page_title="Page View"):
-    if not GA_MEASUREMENT_ID or not GA_API_SECRET:
-        return
+import requests
 
-    client_id = str(uuid.uuid4())
+def send_ga4_pageview(request, client_id):
 
+    url = f"https://www.google-analytics.com/mp/collect?measurement_id={GA_MEASUREMENT_ID}&api_secret={GA_API_SECRET}"
+    
     payload = {
         "client_id": client_id,
         "events": [
             {
                 "name": "page_view",
                 "params": {
-                    "page_location": req.url,
-                    "page_title": page_title
+                    "page_location": request.base_url,
+                    "page_title": "Inbox",
+                    "engagement_time_msec": "100"
                 }
             }
         ]
     }
 
-    url = "https://www.google-analytics.com/mp/collect"
-    params = {
-        "measurement_id": GA_MEASUREMENT_ID,
-        "api_secret": GA_API_SECRET
-    }
-
     try:
-        response = requests.post(url, params=params, json=payload)
+        response = requests.post(url, json=payload, timeout=1)
         response.raise_for_status()
         print("✅ GA4 page_view sent")
     except Exception as e:
         print(f"❌ GA4 error: {e}")
-
 
 def add_active_alias(email_id):
     try:
@@ -162,13 +158,24 @@ def reset_email_session():
 @app.route('/new-alias')
 def new_alias():
     reset_email_session()
+    if 'client_id' in session:
+        send_ga4_event("alias_created", {
+            "email_id": session['email_id'],
+            "page_location": request.base_url
+        }, session['client_id'])
     return redirect(url_for('index'))
 
 @app.route('/index.html')
 def index():
-    send_ga4_pageview(request, page_title="Inbox")
     if 'email_id' not in session or check_alias_expiration():
         reset_email_session()
+
+    if 'client_id' not in session:
+        raw = f"{request.remote_addr}-{time.time()}"
+        session['client_id'] = hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+    if GA_MEASUREMENT_ID and GA_API_SECRET:
+        send_ga4_pageview(request, session['client_id'])
 
     email_id = session['email_id']
     inbox_dir = os.path.join(EMAIL_DIR, email_id)
@@ -200,6 +207,18 @@ def index():
 
 @app.route('/email/<email_id>/<filename>')
 def view_email(email_id, filename):
+    if 'email_id' not in session or check_alias_expiration():
+        reset_email_session()
+
+    if 'client_id' not in session:
+        raw = f"{request.remote_addr}-{time.time()}"
+        session['client_id'] = hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+    if GA_MEASUREMENT_ID and GA_API_SECRET:
+        send_ga4_pageview(request, session['client_id'])
+
+
+
     inbox_dir = os.path.join(EMAIL_DIR, email_id)
     file_path = os.path.join(inbox_dir, filename)
 
