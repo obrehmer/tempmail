@@ -101,7 +101,7 @@ def add_active_alias(email_id):
     except (FileNotFoundError, json.JSONDecodeError):
         active_aliases = {}
 
-    active_aliases[email_id] = datetime.utcnow().isoformat()
+    active_aliases[email_id] = datetime.now(timezone.utc).isoformat()
 
     with open(ACTIVE_ALIASES_FILE, "w") as f:
         json.dump(active_aliases, f)
