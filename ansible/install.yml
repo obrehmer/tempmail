@@ -198,6 +198,20 @@
         group: www-data
         mode: '0644'
       when: not aliases_file.stat.exists
+
+    - name: Check if config_ga4.json exists
+      stat:
+        path: /var/tempmail/misc/config_ga4.json
+      register: config_ga4_file
+    
+    - name: Create config_ga4.json if it does not exist
+      copy:
+        dest: /var/tempmail/misc/config_ga4.json
+        src: config_ga4.json.vault
+        owner: www-data
+        group: www-data
+        mode: '0600'
+      when: not config_ga4_file.stat.exists
     
     
     # Apache Configuration
