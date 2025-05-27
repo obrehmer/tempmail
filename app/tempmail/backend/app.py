@@ -3,11 +3,9 @@ from flask_socketio import SocketIO
 
 import os
 import json
-import uuid
 import time
 import random
 import string
-import smtplib
 import pwd
 import requests
 import hashlib
@@ -39,7 +37,6 @@ TARGET_USER = "www-data"
 STATS_FILE = "/var/tempmail/misc/stats.json"
 ACTIVE_ALIASES_FILE = "/var/tempmail/misc/active_aliases.json"
 
-import requests
 
 def send_ga4_pageview(request, client_id):
 
@@ -128,7 +125,7 @@ def create_welcome_email(email_id):
         pass
 
 def log_address_creation():
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     stats = {}
 
     try:
@@ -415,7 +412,6 @@ def send_reply():
         flash(f"Fehler beim Senden: {str(e)}", "error")
         return redirect(url_for('view_email', email_id=alias, filename=filename))
 
-import re
 
 def sanitize_header(value):
     # Entfernt potenziell gefährliche Zeichen in Headern
