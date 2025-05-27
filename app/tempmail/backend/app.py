@@ -14,9 +14,10 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from email.message import EmailMessage
 
+GA_CONFIG_PATH = "/var/tempmail/misc/ga4_config.json"
 
 try:
-    with open("config_ga4.json") as f:
+    with open(GA_CONFIG_PATH) as f:
         ga4_config = json.load(f)
         GA_MEASUREMENT_ID = ga4_config.get("measurement_id")
         GA_API_SECRET = ga4_config.get("api_secret")
@@ -24,7 +25,6 @@ except Exception as e:
     print(f"Fehler beim Laden der GA4-Konfiguration: {e}")
     GA_MEASUREMENT_ID = None
     GA_API_SECRET = None
-
 
 app = Flask(__name__)
 app.secret_key = 'super-secret-key'
