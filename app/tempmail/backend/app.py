@@ -89,7 +89,7 @@ def send_ga4_forward_email(request, client_id):
     try:
         response = requests.post(url, json=payload, timeout=1)
         response.raise_for_status()
-        print("✅ GA4 page_view sent")
+        print("✅ GA4 email forward")
     except Exception as e:
         print(f"❌ GA4 error: {e}")
 
