@@ -15,6 +15,17 @@ from pathlib import Path
 from email.message import EmailMessage
 
 
+try:
+    with open("config_ga4.json") as f:
+        ga4_config = json.load(f)
+        GA_MEASUREMENT_ID = ga4_config.get("measurement_id")
+        GA_API_SECRET = ga4_config.get("api_secret")
+except Exception as e:
+    print(f"Fehler beim Laden der GA4-Konfiguration: {e}")
+    GA_MEASUREMENT_ID = None
+    GA_API_SECRET = None
+
+
 app = Flask(__name__)
 app.secret_key = 'super-secret-key'
 socketio = SocketIO(app)
@@ -25,6 +36,39 @@ ALIAS_LIFETIME = timedelta(minutes=5)
 TARGET_USER = "www-data"
 STATS_FILE = "/var/tempmail/misc/stats.json"
 ACTIVE_ALIASES_FILE = "/var/tempmail/misc/active_aliases.json"
+
+def send_ga4_pageview(req, page_title="Page View"):
+    if not GA_MEASUREMENT_ID or not GA_API_SECRET:
+        return
+
+    client_id = str(uuid.uuid4())
+
+    payload = {
+        "client_id": client_id,
+        "events": [
+            {
+                "name": "page_view",
+                "params": {
+                    "page_location": req.url,
+                    "page_title": page_title
+                }
+            }
+        ]
+    }
+
+    url = "https://www.google-analytics.com/mp/collect"
+    params = {
+        "measurement_id": GA_MEASUREMENT_ID,
+        "api_secret": GA_API_SECRET
+    }
+
+    try:
+        response = requests.post(url, params=params, json=payload)
+        response.raise_for_status()
+        print("✅ GA4 page_view sent")
+    except Exception as e:
+        print(f"❌ GA4 error: {e}")
+
 
 def add_active_alias(email_id):
     try:
@@ -122,6 +166,7 @@ def new_alias():
 
 @app.route('/index.html')
 def index():
+    send_ga4_pageview(request, page_title="Inbox")
     if 'email_id' not in session or check_alias_expiration():
         reset_email_session()
 
