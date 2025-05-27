@@ -27,8 +27,12 @@ except Exception as e:
     GA_API_SECRET = None
 
 app = Flask(__name__)
-app.secret_key = 'super-secret-key'
+CORS(app)
 socketio = SocketIO(app)
+
+with open("/var/tempmail/misc/app.secret.json") as f:
+    secret_data = json.load(f)
+    app.secret_key = secret_data["secret_key"]
 
 EMAIL_DIR = "/var/tempmail/mails"
 TIMER_DURATION = 300
