@@ -10,6 +10,7 @@ import pwd
 import requests
 import re
 import hashlib
+import smtplib
 
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
