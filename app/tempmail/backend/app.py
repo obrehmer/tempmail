@@ -68,6 +68,33 @@ def send_ga4_pageview(request, client_id):
     except Exception as e:
         print(f"❌ GA4 error: {e}")
 
+def send_ga4_emailview(request, client_id):
+
+    url = f"https://www.google-analytics.com/mp/collect?measurement_id={GA_MEASUREMENT_ID}&api_secret={GA_API_SECRET}"
+    
+    payload = {
+        "client_id": client_id,
+        "events": [
+            {
+                "name": "email_view",
+                "params": {
+                    "page_location": request.base_url,
+                    "page_title": "Inbox",
+                    "engagement_time_msec": "100"
+                }
+            }
+        ]
+    }
+
+    try:
+        response = requests.post(url, json=payload, timeout=1)
+        response.raise_for_status()
+        print("✅ GA4 email_view sent")
+    except Exception as e:
+        print(f"❌ GA4 error: {e}")
+
+
+
 def send_ga4_forward_email(request, client_id):
 
     url = f"https://www.google-analytics.com/mp/collect?measurement_id={GA_MEASUREMENT_ID}&api_secret={GA_API_SECRET}"
@@ -118,6 +145,30 @@ def send_ga4_reply_email(request, client_id):
     except Exception as e:
         print(f"❌ GA4 error: {e}")
 
+def send_ga4_create_new_email(request, client_id):
+
+    url = f"https://www.google-analytics.com/mp/collect?measurement_id={GA_MEASUREMENT_ID}&api_secret={GA_API_SECRET}"
+    
+    payload = {
+        "client_id": client_id,
+        "events": [
+            {
+                "name": "create_new_email",
+                "params": {
+                    "page_location": request.base_url,
+                    "page_title": "Inbox",
+                    "engagement_time_msec": "100"
+                }
+            }
+        ]
+    }
+
+    try:
+        response = requests.post(url, json=payload, timeout=1)
+        response.raise_for_status()
+        print("✅ GA4 create new email")
+    except Exception as e:
+        print(f"❌ GA4 error: {e}")
 
 
 def add_active_alias(email_id):
@@ -212,11 +263,17 @@ def reset_email_session():
 @app.route('/new-alias')
 def new_alias():
     reset_email_session()
-    if 'client_id' in session:
-        send_ga4_event("alias_created", {
-            "email_id": session['email_id'],
-            "page_location": request.base_url
-        }, session['client_id'])
+    if 'email_id' not in session or check_alias_expiration():
+        reset_email_session()
+
+    if 'client_id' not in session:
+        raw = f"{request.remote_addr}-{time.time()}"
+        session['client_id'] = hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+    if GA_MEASUREMENT_ID and GA_API_SECRET:
+        send_ga4_create_new_email(request, session['client_id'])
+
+ 
     return redirect(url_for('index'))
 
 @app.route('/index.html')
@@ -269,7 +326,7 @@ def view_email(email_id, filename):
         session['client_id'] = hashlib.sha256(raw.encode()).hexdigest()[:16]
 
     if GA_MEASUREMENT_ID and GA_API_SECRET:
-        send_ga4_pageview(request, session['client_id'])
+        send_ga4_emailview(request, session['client_id'])
 
 
 
