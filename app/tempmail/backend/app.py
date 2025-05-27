@@ -10,7 +10,7 @@ import pwd
 import requests
 import hashlib
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from email.message import EmailMessage
 
