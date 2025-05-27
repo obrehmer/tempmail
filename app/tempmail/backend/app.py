@@ -270,6 +270,18 @@ def ads():
 
 @app.route('/why-temp-email.html')
 def why_temp_email():
+    if 'email_id' not in session or check_alias_expiration():
+        reset_email_session()
+
+    if 'client_id' not in session:
+        raw = f"{request.remote_addr}-{time.time()}"
+        session['client_id'] = hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+    if GA_MEASUREMENT_ID and GA_API_SECRET:
+        send_ga4_pageview(request, session['client_id'])
+
+
+
     return render_template('why-temp-email.html')
 
 @app.route("/stats")
@@ -300,6 +312,18 @@ def internal_error(error):
 
 @app.route("/temporary-email.html")
 def temporary_email():
+    if 'email_id' not in session or check_alias_expiration():
+        reset_email_session()
+
+    if 'client_id' not in session:
+        raw = f"{request.remote_addr}-{time.time()}"
+        session['client_id'] = hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+    if GA_MEASUREMENT_ID and GA_API_SECRET:
+        send_ga4_pageview(request, session['client_id'])
+
+
+
     return render_template("temporary-email.html")
 
 
@@ -464,6 +488,18 @@ def forward_mail(mail_id):
 
 @app.route('/faq')
 def faq():
+    if 'email_id' not in session or check_alias_expiration():
+        reset_email_session()
+
+    if 'client_id' not in session:
+        raw = f"{request.remote_addr}-{time.time()}"
+        session['client_id'] = hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+    if GA_MEASUREMENT_ID and GA_API_SECRET:
+        send_ga4_pageview(request, session['client_id'])
+
+
+
     return render_template('faq.html')
 
 
