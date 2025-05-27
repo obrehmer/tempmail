@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from email.message import EmailMessage
 
-GA_CONFIG_PATH = "/var/tempmail/misc/ga4_config.json"
+GA_CONFIG_PATH = "/var/tempmail/misc/config_ga4.json"
 
 try:
     with open(GA_CONFIG_PATH) as f:
