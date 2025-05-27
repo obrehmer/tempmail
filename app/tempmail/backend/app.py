@@ -93,6 +93,32 @@ def send_ga4_forward_email(request, client_id):
     except Exception as e:
         print(f"❌ GA4 error: {e}")
 
+def send_ga4_reply_email(request, client_id):
+
+    url = f"https://www.google-analytics.com/mp/collect?measurement_id={GA_MEASUREMENT_ID}&api_secret={GA_API_SECRET}"
+    
+    payload = {
+        "client_id": client_id,
+        "events": [
+            {
+                "name": "reply_email",
+                "params": {
+                    "page_location": request.base_url,
+                    "page_title": "Inbox",
+                    "engagement_time_msec": "100"
+                }
+            }
+        ]
+    }
+
+    try:
+        response = requests.post(url, json=payload, timeout=1)
+        response.raise_for_status()
+        print("✅ GA4 email reply")
+    except Exception as e:
+        print(f"❌ GA4 error: {e}")
+
+
 
 def add_active_alias(email_id):
     try:
@@ -357,6 +383,17 @@ def temporary_email():
 
 @app.route('/send-reply', methods=['POST'])
 def send_reply():
+    if 'email_id' not in session or check_alias_expiration():
+        reset_email_session()
+
+    if 'client_id' not in session:
+        raw = f"{request.remote_addr}-{time.time()}"
+        session['client_id'] = hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+    if GA_MEASUREMENT_ID and GA_API_SECRET:
+        send_ga4_reply_email(request, session['client_id'])
+
+
     reply_to = request.form.get('reply_to')
     alias = request.form.get('alias')
     subject = request.form.get('subject')
