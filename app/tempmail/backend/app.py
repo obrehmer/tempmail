@@ -79,7 +79,7 @@ def send_ga4_emailview(request, client_id):
                 "name": "email_view",
                 "params": {
                     "page_location": request.base_url,
-                    "page_title": "Inbox",
+                    "page_title": "View Email",
                     "engagement_time_msec": "100"
                 }
             }
@@ -106,7 +106,7 @@ def send_ga4_forward_email(request, client_id):
                 "name": "forward_email",
                 "params": {
                     "page_location": request.base_url,
-                    "page_title": "Inbox",
+                    "page_title": "Forward Email",
                     "engagement_time_msec": "100"
                 }
             }
@@ -131,7 +131,7 @@ def send_ga4_reply_email(request, client_id):
                 "name": "reply_email",
                 "params": {
                     "page_location": request.base_url,
-                    "page_title": "Inbox",
+                    "page_title": "Reply Email",
                     "engagement_time_msec": "100"
                 }
             }
@@ -156,7 +156,7 @@ def send_ga4_create_new_email(request, client_id):
                 "name": "create_new_email",
                 "params": {
                     "page_location": request.base_url,
-                    "page_title": "Inbox",
+                    "page_title": "Create Alias",
                     "engagement_time_msec": "100"
                 }
             }
