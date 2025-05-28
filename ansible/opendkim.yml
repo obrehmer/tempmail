@@ -5,6 +5,12 @@
     state: present
     update_cache: yes
 
+- name: add postfix to opendkim group
+  user:
+    name: postfix
+    groups: opendkim
+    append: yes
+
 - name: Install OpenDKIM tools
   apt:
     name: opendkim-tools
@@ -20,6 +26,17 @@
   loop:
     - /etc/opendkim
     - /etc/opendkim/keys
+
+- name: Create OpenDKIM config directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: opendkim
+    group: postfix
+    mode: '0755'
+  loop:
+    - /var/spool/postfix/opendkim
+
 
 - name: Ensure required OpenDKIM settings are present in /etc/opendkim.conf
   lineinfile:

@@ -132,11 +132,11 @@
         src: /etc/iptables/rules.v4
       register: saved_rules
       ignore_errors: true 
-    
+
     - name: Get current iptables rules from system
       command: iptables-save
       register: current_rules
-    
+
     - name: Save iptables rules if changed
       copy:
         content: "{{ current_rules.stdout }}"
@@ -146,8 +146,7 @@
         mode: '0644'
       when: saved_rules is not failed
       diff: true
-    
-    
+
     # Directory Setup
     - name: Create required directories for tempmail
       file:
@@ -160,12 +159,12 @@
         - /var/tempmail/mails
         - /var/tempmail/misc
         - /var/www/tempmail
-    
+
     - name: Check if stats.json exists
       stat:
         path: /var/tempmail/misc/stats.json
       register: stats_file
-    
+
     - name: Create empty stats.json if it does not exist
       copy:
         dest: /var/tempmail/misc/stats.json
@@ -174,12 +173,12 @@
         group: www-data
         mode: '0644'
       when: not stats_file.stat.exists
-    
+
     - name: Check if active_aliases.json exists
       stat:
         path: /var/tempmail/misc/active_aliases.json
       register: aliases_file
-    
+
     - name: Create empty active_aliases.json if it does not exist
       copy:
         dest: /var/tempmail/misc/active_aliases.json
@@ -193,7 +192,7 @@
       stat:
         path: /var/tempmail/misc/config_ga4.json
       register: config_ga4_file
-    
+
     - name: Create config_ga4.json if it does not exist
       copy:
         dest: /var/tempmail/misc/config_ga4.json
@@ -207,7 +206,7 @@
       stat:
         path: /var/tempmail/misc/app.secret.json
       register: app_secret_json_file
-    
+
     - name: Create app.secret.json if it does not exist
       copy:
         dest: /var/tempmail/misc/app.secret.json
@@ -216,8 +215,19 @@
         group: www-data
         mode: '0600'
       when: not app_secret_json_file.stat.exists
-    
-    
+
+    - name: Enable Apache mod_rewrite
+      command: a2enmod rewrite
+      notify: Restart Apache
+
+    - name: Enable Apache mod_rewrite
+      command: a2enmod proxy
+      notify: Restart Apache
+
+    - name: Enable Apache mod_rewrite
+      command: a2enmod proxy_http
+      notify: Restart Apache
+
     # Apache Configuration
     - name: Write Apache VirtualHost configuration for tempmail
       copy:
@@ -250,6 +260,12 @@
               ProxyPass / http://127.0.0.1:5000/
               ProxyPassReverse / http://127.0.0.1:5000/
           </VirtualHost>
+      notify: Restart Apache
+
+    - name: Enable site using a2ensite
+      command: a2ensite tempmail.conf
+      args:
+        creates: /etc/apache2/sites-enabled/tempmail.conf
       notify: Restart Apache
 
     - name: Set Apache ErrorLog to /dev/null
@@ -378,7 +394,7 @@
         state: present
         backrefs: yes
       with_items:
-        - { regexp: '^mynetworks\s*=.*', line: 'mynetworks = 127.0.0.0/8' }
+        - { regexp: '^mynetworks\s*=.*', line: 'mynetworks = 127.0.0.0/8 [::1]/128' }
         - { regexp: '^home_mailbox\s*=.*', line: 'home_mailbox =' }
         - { regexp: '^local_transport\s*=.*', line: 'local_transport = error:local delivery disabled' }
         - { regexp: '^default_process_limit\s*=.*', line: 'default_process_limit = 50' }
