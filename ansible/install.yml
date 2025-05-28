@@ -72,7 +72,6 @@
         name: "{{ packages }}"
         state: present
         update_cache: yes
-      async: 300
       poll: 0
       register: apt_job
       tags:
@@ -80,16 +79,7 @@
         - modsecurity
         - install
       notify: Reload Apache
- 
-    - name: Wait for apt to finish
-      async_status:
-        jid: "{{ apt_job.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      retries: 10
-      delay: 15
-     
-    # Firewall Configuration
+
     - name: Define allowed ports
       set_fact:
         allowed_ports: "{{ [ssh_port, smtp] }}"
@@ -343,10 +333,10 @@
     - name: Create /etc/postfix/reject_recipients if not exist
       file:
         dest: /etc/postfix/reject_recipients
+        state: touch
         owner: root
         group: root
         mode: '0644'
-        force: no
       notify: postmap rejects
 
 
@@ -690,7 +680,7 @@
       command: postmap /etc/postfix/reject_recipients
       notify: Restart Postfix
 
-    - name: Aktualisiere Aliases und starte Postfix neu
+    - name: Update aliases and restart Postfix
       shell: |
         newaliases
         systemctl restart postfix
@@ -704,5 +694,3 @@
       service:
         name: opendkim
         state: restarted
-
-
