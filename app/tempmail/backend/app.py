@@ -249,7 +249,7 @@ def log_address_creation():
 
 def reset_email_session():
     if 'email_id' in session:
-        inbox_dir = os.path.join(EMAIL_DIR, session['email_id'])
+        inbox_dir = os.path.join(config.EMAIL_DIR, session['email_id'])
         if os.path.exists(inbox_dir):
             for fname in os.listdir(inbox_dir):
                 os.remove(os.path.join(inbox_dir, fname))
@@ -289,7 +289,7 @@ def index():
         send_ga4_pageview(request, session['client_id'])
 
     email_id = session['email_id']
-    inbox_dir = os.path.join(EMAIL_DIR, email_id)
+    inbox_dir = os.path.join(config.EMAIL_DIR, email_id)
     emails = []
 
     if os.path.exists(inbox_dir):
@@ -330,7 +330,7 @@ def view_email(email_id, filename):
 
 
 
-    inbox_dir = os.path.join(EMAIL_DIR, email_id)
+    inbox_dir = os.path.join(config.EMAIL_DIR, email_id)
     file_path = os.path.join(inbox_dir, filename)
 
     if not os.path.exists(file_path):
@@ -361,7 +361,7 @@ def view_email(email_id, filename):
 
 @app.route('/delete_emails/<email_id>')
 def delete_emails(email_id):
-    inbox_dir = os.path.join(EMAIL_DIR, email_id)
+    inbox_dir = os.path.join(config.EMAIL_DIR, email_id)
     if os.path.exists(inbox_dir):
         for fname in os.listdir(inbox_dir):
             os.remove(os.path.join(inbox_dir, fname))
@@ -466,7 +466,7 @@ def send_reply():
 
     try:
 
-        inbox_dir = os.path.join(EMAIL_DIR, alias)
+        inbox_dir = os.path.join(config.EMAIL_DIR, alias)
         original_path = os.path.join(inbox_dir, filename)
 
         original_body = ""
@@ -566,7 +566,7 @@ def forward_mail(mail_id):
         flash("Invalid email address format.", "error")
         return redirect(url_for('index'))
 
-    inbox_dir = os.path.join(EMAIL_DIR, mail_id)
+    inbox_dir = os.path.join(config.EMAIL_DIR, mail_id)
     mail_file = None
 
     if os.path.exists(inbox_dir):
