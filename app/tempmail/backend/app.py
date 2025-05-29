@@ -18,7 +18,6 @@ from email.message import EmailMessage
 
 from config import config
 
-GA_CONFIG_PATH = "/var/tempmail/misc/config_ga4.json"
 
 try:
     with open(GA_CONFIG_PATH) as f:
@@ -35,16 +34,9 @@ app.config.from_object(config)
 socketio = SocketIO(app)
 
 
-with open("/var/tempmail/misc/app.secret.json") as f:
+with open(APP_SECRET) as f:
     secret_data = json.load(f)
     app.secret_key = secret_data["secret_key"]
-
-EMAIL_DIR = "/var/tempmail/mails"
-TIMER_DURATION = 300
-ALIAS_LIFETIME = timedelta(minutes=5)
-TARGET_USER = "www-data"
-STATS_FILE = "/var/tempmail/misc/stats.json"
-ACTIVE_ALIASES_FILE = "/var/tempmail/misc/active_aliases.json"
 
 
 def send_ga4_pageview(request, client_id):
