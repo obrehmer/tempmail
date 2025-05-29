@@ -17,10 +17,10 @@ from pathlib import Path
 from email.message import EmailMessage
 
 from config import config
-
+from config.config import CookieConfig TIMER_DURATION
 
 try:
-    with open(GA_CONFIG_PATH) as f:
+    with open(config.GA_CONFIG_PATH) as f:
         ga4_config = json.load(f)
         GA_MEASUREMENT_ID = ga4_config.get("measurement_id")
         GA_API_SECRET = ga4_config.get("api_secret")
@@ -30,11 +30,11 @@ except Exception as e:
     GA_API_SECRET = None
 
 app = Flask(__name__)
-app.config.from_object(config)
+app.config.from_object(CookieConfig)
 socketio = SocketIO(app)
 
 
-with open(APP_SECRET) as f:
+with open(config.APP_SECRET) as f:
     secret_data = json.load(f)
     app.secret_key = secret_data["secret_key"]
 
@@ -169,25 +169,25 @@ def send_ga4_create_new_email(request, client_id):
 
 def add_active_alias(email_id):
     try:
-        with open(ACTIVE_ALIASES_FILE, "r") as f:
+        with open(config.ACTIVE_ALIASES_FILE, "r") as f:
             active_aliases = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         active_aliases = {}
 
     active_aliases[email_id] = datetime.now(timezone.utc).isoformat()
 
-    with open(ACTIVE_ALIASES_FILE, "w") as f:
+    with open(config.ACTIVE_ALIASES_FILE, "w") as f:
         json.dump(active_aliases, f)
 
 def ensure_stats_file():
     initial_data = {}
     try:
-        os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
-        if not os.path.exists(STATS_FILE):
-            with open(STATS_FILE, 'w') as f:
+        os.makedirs(os.path.dirname(config.STATS_FILE), exist_ok=True)
+        if not os.path.exists(config.STATS_FILE):
+            with open(config.STATS_FILE, 'w') as f:
                 json.dump(initial_data, f)
-            pw_record = pwd.getpwnam(TARGET_USER)
-            os.chown(STATS_FILE, pw_record.pw_uid, pw_record.pw_gid)
+            pw_record = pwd.getpwnam(config.TARGET_USER)
+            os.chown(config.STATS_FILE, pw_record.pw_uid, pw_record.pw_gid)
     except Exception as e:
         print(f"error while creating stats.json: {e}")
 
@@ -197,15 +197,15 @@ def generate_email():
 def check_alias_expiration():
     if 'email_created_at' in session:
         created_at = datetime.fromtimestamp(session['email_created_at'])
-        if datetime.now() - created_at > ALIAS_LIFETIME:
+        if datetime.now() - created_at > config.ALIAS_LIFETIME:
             return True
     return False
 
 def create_welcome_email(email_id):
-    inbox_dir = Path(EMAIL_DIR) / email_id
+    inbox_dir = Path(config.EMAIL_DIR) / email_id
     inbox_dir.mkdir(parents=True, exist_ok=True)
     try:
-        pw_record = pwd.getpwnam(TARGET_USER)
+        pw_record = pwd.getpwnam(config.TARGET_USER)
         uid = pw_record.pw_uid
         gid = pw_record.pw_gid
         os.chown(inbox_dir, uid, gid)
@@ -233,14 +233,14 @@ def log_address_creation():
     stats = {}
 
     try:
-        with open(STATS_FILE, "r") as f:
+        with open(config.STATS_FILE, "r") as f:
             stats = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         stats = {}
 
     stats[today] = stats.get(today, 0) + 1
 
-    with open(STATS_FILE, "w") as f:
+    with open(config.STATS_FILE, "w") as f:
         json.dump(stats, f)
 
 def reset_email_session():
@@ -296,7 +296,7 @@ def index():
                 mail['filename'] = fname
                 emails.append(mail)
 
-    remaining_time = ALIAS_LIFETIME - (datetime.now() - datetime.fromtimestamp(session['email_created_at']))
+    remaining_time = config.ALIAS_LIFETIME - (datetime.now() - datetime.fromtimestamp(session['email_created_at']))
     remaining_minutes, remaining_seconds = divmod(int(remaining_time.total_seconds()), 60)
 
     if remaining_minutes < 0:
@@ -394,7 +394,7 @@ def why_temp_email():
 @app.route("/stats")
 def stats():
     try:
-        with open(STATS_FILE, "r") as f:
+        with open(config.STATS_FILE, "r") as f:
             stats = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         stats = {}
