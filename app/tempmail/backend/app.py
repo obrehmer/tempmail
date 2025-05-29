@@ -19,9 +19,6 @@ from email.message import EmailMessage
 from config import config
 from config.config import CookieConfig
 
-#TIMER_DURATION = 300
-
-
 
 try:
     with open(config.GA_CONFIG_PATH) as f:
