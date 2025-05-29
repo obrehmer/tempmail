@@ -19,7 +19,7 @@ from email.message import EmailMessage
 from config import config
 from config.config import CookieConfig
 
-TIMER_DURATION = 300
+#TIMER_DURATION = 300
 
 
 

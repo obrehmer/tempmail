@@ -1,3 +1,4 @@
+from datetime import timedelta
 GA_CONFIG_PATH = "/var/tempmail/misc/config_ga4.json"
 APP_SECRET = "/var/tempmail/misc/app.secret.json"
 EMAIL_DIR = "/var/tempmail/mails"
