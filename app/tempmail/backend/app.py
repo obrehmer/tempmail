@@ -493,40 +493,14 @@ def send_reply():
         return '''
         <!DOCTYPE html>
         <html>
-        <head>
-            <title>Mail verschickt</title>
-            <script>
-                // Lade index.html im Hintergrund automatisch
-                setTimeout(function() {
-                    window.location.href = "/index.html";
-                }, 2000);
+        <head><meta charset="UTF-8"><title>Replied</title>
+        <script>
+        setTimeout(function(){ window.location.href = "/index.html"; }, 2000);
+        </script></head>
+        <body style="font-family: sans-serif; text-align: center; padding: 2em;">
+        <h2>Mail has been replied successfully.</h2>
+        </body></html>
 
-                function closeWindow() {
-                    window.close(); // Funktioniert nur bei per JS geöffnetem Fenster
-                }
-            </script>
-            <style>
-                body {
-                    font-family: sans-serif;
-                    text-align: center;
-                    padding-top: 50px;
-                }
-                button {
-                    padding: 10px 20px;
-                    font-size: 16px;
-                    border: none;
-                    background: #3498db;
-                    color: white;
-                    border-radius: 6px;
-                    cursor: pointer;
-                }
-            </style>
-        </head>
-        <body>
-            <h2>Mail wurde erfolgreich verschickt!</h2>
-            <button onclick="closeWindow()">Schließen</button>
-        </body>
-        </html>
         '''
 
     except Exception as e:
