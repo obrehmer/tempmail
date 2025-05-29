@@ -16,6 +16,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from email.message import EmailMessage
 
+
+
 GA_CONFIG_PATH = "/var/tempmail/misc/config_ga4.json"
 
 try:
@@ -30,6 +32,12 @@ except Exception as e:
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+
+app.config.update(
+    SESSION_COOKIE_SECURE=True,   # Nur über HTTPS senden
+    SESSION_COOKIE_HTTPONLY=True, # Nicht im JavaScript verfügbar (zusätzliche Sicherheit)
+    SESSION_COOKIE_SAMESITE='Lax' # Schutz gegen CSRF, aber erlaubt noch Navigation
+)
 
 with open("/var/tempmail/misc/app.secret.json") as f:
     secret_data = json.load(f)
